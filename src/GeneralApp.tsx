@@ -363,9 +363,14 @@ function RulesResponse({ response, loading }: { response: RulesResponse | null; 
       
       {/* Answer */}
       <div className="prose prose-sm max-w-none mb-4">
-        <p className="text-gray-800 leading-relaxed font-sans whitespace-pre-wrap text-sm">
-          {response.answer}
-        </pre>
+        <div 
+    	  className="text-gray-800 leading-relaxed"
+          dangerouslySetInnerHTML={{
+            __html: response.answer
+               .replace(/\n/g, '<br>')
+               .replace(/•/g, '&bull;')
+          }}
+        />
       </div>
       
       {/* Footer */}
