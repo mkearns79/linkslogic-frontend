@@ -51,7 +51,7 @@ const columbiaStyles = `
 `;
 
 // Configuration for Columbia CC
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://192.168.1.158:5001';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://linkslogic-backend-576708582341.us-central1.run.app';
 const CLUB_ID = 'columbia_cc';
 
 // Types
@@ -420,9 +420,9 @@ function ColumbiaRulesResponse({ response, loading }: { response: RulesResponse 
       
       {/* Answer */}
       <div className="prose prose-sm max-w-none mb-4">
-        <p className="text-gray-800 leading-relaxed">
+        <p className="text-gray-800 leading-relaxed font-sans whitespace-pre-wrap text-sm">
           {response.answer}
-        </p>
+        </pre>
       </div>
       
       {/* Footer */}
