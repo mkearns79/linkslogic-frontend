@@ -423,21 +423,20 @@ function ColumbiaRulesResponse({ response, loading }: { response: RulesResponse 
         <div 
     	  className="text-gray-800 leading-relaxed"
 	  dangerouslySetInnerHTML={{
-            .split('\n')
-            .map(line => {
-              if (line.trim().startsWith('• ')) {
-                // Bullet point line
-                const text = line.replace('• ', '');
-                return `<div style="display: flex; margin-bottom: 4px; padding-left: 0;"><span style="margin-right: 8px;">&bull;</span><span>${text}</span></div>`;
-              } else {
-                // Regular line
-                return line;
-              }
-            })
-            .join('<br>')
+            __html: response.answer 
+	      .split('\n')
+              .map(line => {
+                if (line.trim().startsWith('• ')) {
+                  const text = line.replace('• ', '');
+                  return `<div style="display: flex; margin-bottom: 4px; padding-left: 0;"><span style="margin-right: 8px;">&bull;</span><span>${text}</span></div>`;
+                } else {
+                  return line;
+                }
+              })
+              .join('<br>')
           }}
         />
-      </div>
+       </div>
       
       {/* Footer */}
       <div className="flex items-center justify-between pt-4 border-t border-gray-100">
