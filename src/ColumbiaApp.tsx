@@ -422,14 +422,12 @@ function ColumbiaRulesResponse({ response, loading }: { response: RulesResponse 
       <div className="prose prose-sm max-w-none mb-4">
         <div 
     	  className="text-gray-800 leading-relaxed"
-	  style={{
-            paddingLeft: '1em',
-            textIndent: '-1em'
-          }}
 	  dangerouslySetInnerHTML={{
             __html: response.answer
                .replace(/\n/g, '<br>')
-               .replace(/•/g, '&bull;')
+               .replace(/• /g, '<div style="display: flex; margin-bottom: 4px;"><span style="margin-right: 8px;">&bull;</span><span>')
+               .replace(/<br><div style="display: flex/g, '</span></div><br><div style="display: flex')
+               .replace(/$/, response.answer.includes('•') ? '</span></div>' : '')
           }}
         />
       </div>
