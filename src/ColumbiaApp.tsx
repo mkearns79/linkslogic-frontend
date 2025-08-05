@@ -472,7 +472,7 @@ function ColumbiaQuickQuestions({ questions, onQuestionSelect, disabled }: {
             key={q.id}
             onClick={() => onQuestionSelect(q.text)}
             disabled={disabled}
-            className="flex items-center p-4 bg-gray-50 rounded-lg text-sm hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-left transition-colors"
+            className="flex items-center p-5 bg-gray-50 rounded-lg text-sm hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-left transition-colors"
           >
             <span className="text-lg mr-3">{q.icon}</span>
             <span className="text-gray-700">{q.text}</span>
