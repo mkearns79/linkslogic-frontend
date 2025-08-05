@@ -472,7 +472,7 @@ function ColumbiaQuickQuestions({ questions, onQuestionSelect, disabled }: {
             key={q.id}
             onClick={() => onQuestionSelect(q.text)}
             disabled={disabled}
-            className="flex items-center p-5 bg-gray-50 rounded-lg text-sm hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-left transition-colors"
+            className="flex items-center p-6 bg-gray-50 rounded-lg text-sm hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-left transition-colors"
           >
             <span className="text-lg mr-3">{q.icon}</span>
             <span className="text-gray-700">{q.text}</span>
@@ -535,7 +535,7 @@ export default function ColumbiaApp() {
           <div className="grid grid-cols-2 gap-1">
             <button
               onClick={() => setActiveTab('voice')}
-              className={`py-3 px-6 rounded-md font-medium text-sm transition ${
+              className={`py-4 px-8 rounded-md font-medium text-sm transition ${
                 activeTab === 'voice' 
                   ? 'bg-blue-600 text-white' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -545,7 +545,7 @@ export default function ColumbiaApp() {
             </button>
             <button
               onClick={() => setActiveTab('text')}
-              className={`py-3 px-6 rounded-md font-medium text-sm transition ${
+              className={`py-4 px-8 rounded-md font-medium text-sm transition ${
                 activeTab === 'text' 
                   ? 'bg-blue-600 text-white' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -604,7 +604,7 @@ export default function ColumbiaApp() {
       {/* Footer */}
       <footer className="max-w-md mx-auto px-6 pb-6">
         <div className="text-center text-blue-600 text-xs">
-          <p>Powered by LinksLogic AI • Columbia Golf Rules Expert</p>
+          <p>Powered by LinksLogic AI</p>
         </div>
       </footer>
     </div>
