@@ -428,7 +428,7 @@ function ColumbiaRulesResponse({ response, loading }: { response: RulesResponse 
               .map(line => {
                 if (line.trim().startsWith('• ')) {
                   const text = line.replace('• ', '');
-                  return `<div style="display: flex; margin-bottom: 1px; padding-left: 0;"><span style="margin-right: 8px;">&bull;</span><span>${text}</span></div>`;
+                  return `<div style="display: flex; margin-bottom: 2px; padding-left: 0;"><span style="margin-right: 8px;">&bull;</span><span>${text}</span></div>`;
                 } else {
                   return line;
                 }
