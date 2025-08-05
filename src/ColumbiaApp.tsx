@@ -423,11 +423,18 @@ function ColumbiaRulesResponse({ response, loading }: { response: RulesResponse 
         <div 
     	  className="text-gray-800 leading-relaxed"
 	  dangerouslySetInnerHTML={{
-            __html: response.answer
-               .replace(/\n/g, '<br>')
-               .replace(/• /g, '<div style="display: flex; margin-bottom: 4px;"><span style="margin-right: 8px;">&bull;</span><span>')
-               .replace(/<br><div style="display: flex/g, '</span></div><br><div style="display: flex')
-               .replace(/$/, response.answer.includes('•') ? '</span></div>' : '')
+            .split('\n')
+            .map(line => {
+              if (line.trim().startsWith('• ')) {
+                // Bullet point line
+                const text = line.replace('• ', '');
+                return `<div style="display: flex; margin-bottom: 4px; padding-left: 0;"><span style="margin-right: 8px;">&bull;</span><span>${text}</span></div>`;
+              } else {
+                // Regular line
+                return line;
+              }
+            })
+            .join('<br>')
           }}
         />
       </div>
