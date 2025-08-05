@@ -434,6 +434,7 @@ function ColumbiaRulesResponse({ response, loading }: { response: RulesResponse 
                 }
               })
               .join('<br>')
+	      .replace(/<\/div><br><div style="display: flex/g, '</div><div style="display: flex') // Remove <br> between consecutive bullets
           }}
         />
        </div>
