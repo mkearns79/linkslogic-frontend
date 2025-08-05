@@ -422,11 +422,10 @@ function ColumbiaRulesResponse({ response, loading }: { response: RulesResponse 
       <div className="prose prose-sm max-w-none mb-4">
         <div 
     	  className="text-gray-800 leading-relaxed"
-          style={{
-     	    paddingLeft: '1.2em',
-            textIndent: '-1.2em',
-            lineHeight: '1.4'
-	  }}
+	  style={{
+            paddingLeft: '1em',
+            textIndent: '-1em'
+          }}
 	  dangerouslySetInnerHTML={{
             __html: response.answer
                .replace(/\n/g, '<br>')
