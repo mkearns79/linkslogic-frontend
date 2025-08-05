@@ -312,7 +312,7 @@ function ColumbiaVoiceInput({ onTranscript, disabled }: { onTranscript: (text: s
         onClick={isListening ? stopListening : handleStartListening}
         disabled={disabled}
         className={`
-          w-20 h-20 rounded-full text-white font-bold text-2xl shadow-lg
+          w-24 h-24 rounded-full text-white font-bold text-2xl shadow-lg
           transition-all duration-200 transform active:scale-95
           ${disabled 
             ? 'bg-gray-400 cursor-not-allowed' 
@@ -470,9 +470,10 @@ function ColumbiaQuickQuestions({ questions, onQuestionSelect, disabled }: {
         {questions.map((q) => (
           <button
             key={q.id}
-            onClick={() => onQuestionSelect(q.text)}
-            disabled={disabled}
-            className="flex items-center p-6 bg-gray-50 rounded-lg text-sm hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-left transition-colors"
+  	    onClick={() => onQuestionSelect(q.text)}
+  	    disabled={disabled}
+  	    className="flex items-center p-3 bg-gray-50 rounded-lg text-sm hover:bg-gray-100..."
+  	    style={{ padding: '20px', fontSize: '16px', minHeight: '60px' }}
           >
             <span className="text-lg mr-3">{q.icon}</span>
             <span className="text-gray-700">{q.text}</span>
@@ -535,21 +536,16 @@ export default function ColumbiaApp() {
           <div className="grid grid-cols-2 gap-1">
             <button
               onClick={() => setActiveTab('voice')}
-              className={`py-4 px-8 rounded-md font-medium text-sm transition ${
-                activeTab === 'voice' 
-                  ? 'bg-blue-600 text-white' 
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
+  	      className={`py-2 px-4 rounded-md font-medium text-sm transition ${...}`}
+              style={{ padding: '16px 32px', fontSize: '16px' }}
             >
               🎤 Voice
             </button>
-            <button
+            
+	      <button
               onClick={() => setActiveTab('text')}
-              className={`py-4 px-8 rounded-md font-medium text-sm transition ${
-                activeTab === 'text' 
-                  ? 'bg-blue-600 text-white' 
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
+  	      className={`py-2 px-4 rounded-md font-medium text-sm transition ${...}`}
+  	      style={{ padding: '16px 32px', fontSize: '16px' }}
             >
               ⌨️ Type
             </button>
@@ -573,7 +569,8 @@ export default function ColumbiaApp() {
               <button
                 type="submit"
                 disabled={loading || !textInput.trim()}
-                className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700..."
+  	        style={{ padding: '20px', fontSize: '18px' }}
               >
                 {loading ? 'Rex is thinking...' : 'Ask Rex'}
               </button>
