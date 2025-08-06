@@ -379,7 +379,9 @@ export default function ColumbiaApp() {
     const styleElement = document.createElement('style');
     styleElement.textContent = columbiaStyles;
     document.head.appendChild(styleElement);
-    return () => document.head.removeChild(styleElement);
+    return () => {
+      document.head.removeChild(styleElement);
+    };
   }, []);
 
   // Handle voice transcript submission
