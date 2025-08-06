@@ -536,7 +536,11 @@ export default function ColumbiaApp() {
           <div className="grid grid-cols-2 gap-1">
             <button
               onClick={() => setActiveTab('voice')}
-  	      className={`py-2 px-4 rounded-md font-medium text-sm transition ${...}`}
+  	      className={`py-2 px-4 rounded-md font-medium text-sm transition ${
+		activeTab === 'voice' 
+                  ? 'bg-green-600 text-white' 
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
               style={{ padding: '16px 32px', fontSize: '16px' }}
             >
               🎤 Voice
@@ -544,7 +548,11 @@ export default function ColumbiaApp() {
             
 	    <button
               onClick={() => setActiveTab('text')}
-  	      className={`py-2 px-4 rounded-md font-medium text-sm transition ${...}`}
+  	      className={`py-2 px-4 rounded-md font-medium text-sm transition ${
+		activeTab === 'text' 
+                  ? 'bg-green-600 text-white' 
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
   	      style={{ padding: '16px 32px', fontSize: '16px' }}
             >
               ⌨️ Type
