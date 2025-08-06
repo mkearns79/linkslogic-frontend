@@ -74,12 +74,12 @@ interface QuickQuestion {
   icon: string;
 }
 
-// Voice Recognition Hook (same as before)
+// Voice Recognition Hook
 function useVoiceRecognition() {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [isSupported, setIsSupported] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [voiceError, setVoiceError] = useState<string | null>(null);
   const recognitionRef = useRef<any>(null);
   
   useEffect(() => {
@@ -95,44 +95,42 @@ function useVoiceRecognition() {
       recognition.lang = 'en-US';
       recognition.maxAlternatives = 1;
       
-      let submitTimeout: NodeJS.Timeout | null = null;
-      let accumulatedTranscript = '';
-      
       recognition.onstart = () => {
         setIsListening(true);
-        setError(null);
-        accumulatedTranscript = '';
+        setVoiceError(null);
       };
       
+      let submitTimeout: NodeJS.Timeout | null = null;
+      let accumulatedTranscript = '';
+
       recognition.onresult = (event: any) => {
         let finalTranscript = '';
         let interimTranscript = '';
-        
+  
         for (let i = event.resultIndex; i < event.results.length; i++) {
           const transcript = event.results[i][0].transcript;
-          
+    
           if (event.results[i].isFinal) {
             finalTranscript += transcript;
           } else {
             interimTranscript += transcript;
           }
         }
-        
+  
         if (finalTranscript) {
           accumulatedTranscript += finalTranscript + ' ';
         }
-        
+  
         const currentTranscript = accumulatedTranscript + interimTranscript;
         if (currentTranscript.trim()) {
           setTranscript(currentTranscript.trim());
-          
+    
           if (submitTimeout) {
             clearTimeout(submitTimeout);
           }
-          
+    
           submitTimeout = setTimeout(() => {
-            console.log('🎤 5-second pause detected, submitting:', currentTranscript.trim());
-            accumulatedTranscript = '';
+            console.log('🎤 Auto-submitting after 5 seconds of silence');
             recognition.stop();
           }, 5000);
         }
@@ -140,39 +138,37 @@ function useVoiceRecognition() {
       
       recognition.onend = () => {
         setIsListening(false);
+        if (submitTimeout) {
+          clearTimeout(submitTimeout);
+        }
       };
       
       recognition.onerror = (event: any) => {
-        console.error('Speech recognition error:', event.error);
-        setError(`Voice recognition error: ${event.error}`);
+        setVoiceError(`Speech recognition error: ${event.error}`);
         setIsListening(false);
       };
     }
   }, []);
   
-  const startListening = () => {
+  const startListening = useCallback(() => {
     if (recognitionRef.current && !isListening) {
       setTranscript('');
-      setError(null);
-      try {
-        recognitionRef.current.start();
-      } catch (err) {
-        setError('Failed to start voice recognition');
-      }
+      setVoiceError(null);
+      recognitionRef.current.start();
     }
-  };
+  }, [isListening]);
   
-  const stopListening = () => {
+  const stopListening = useCallback(() => {
     if (recognitionRef.current && isListening) {
       recognitionRef.current.stop();
     }
-  };
+  }, [isListening]);
   
   return {
     isListening,
     transcript,
     isSupported,
-    error,
+    error: voiceError,
     startListening,
     stopListening
   };
@@ -182,41 +178,26 @@ function useVoiceRecognition() {
 function useColumbiaRulesAPI() {
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<RulesResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [apiError, setApiError] = useState<string | null>(null);
   const [quickQuestions, setQuickQuestions] = useState<QuickQuestion[]>([]);
-  const [requestInProgress, setRequestInProgress] = useState(false);
   
   useEffect(() => {
-    loadQuickQuestions();
+    fetch(`${API_BASE_URL}/api/quick-questions`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setQuickQuestions(data.questions);
+        }
+      })
+      .catch(err => console.error('Failed to load quick questions:', err));
   }, []);
   
-  const loadQuickQuestions = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/quick-questions`);
-      const data = await response.json();
-      if (data.success) {
-        setQuickQuestions(data.questions);
-      }
-    } catch (err) {
-      console.error('Failed to load quick questions:', err);
-    }
-  };
-  
-  const askQuestion = useCallback(async (question: string, fastMode: boolean = true) => {
-    if (requestInProgress || loading) {
-      console.log('🚨 Request blocked - already in progress');
-      return;
-    }
-    
-    console.log('🚀 Starting API request for:', question);
-    setRequestInProgress(true);
+  const askQuestion = async (question: string, fastMode: boolean = true) => {
     setLoading(true);
-    setError(null);
+    setApiError(null);
+    setResponse(null);
     
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000);
-      
       const response = await fetch(`${API_BASE_URL}/api/ask`, {
         method: 'POST',
         headers: {
@@ -227,132 +208,29 @@ function useColumbiaRulesAPI() {
           club_id: CLUB_ID,
           fast_mode: fastMode
         }),
-        signal: controller.signal
       });
       
-      clearTimeout(timeoutId);
       const data = await response.json();
       
       if (data.success) {
         setResponse(data);
-        setError(null);
       } else {
-        setError(data.error || 'Failed to get response');
+        setApiError(data.error || 'Failed to get rules information');
       }
-    } catch (err: any) {
-      if (err.name === 'AbortError') {
-        setError('Request timed out');
-      } else {
-        setError('Network error. Please check your connection.');
-      }
-      console.error('API Error:', err);
+    } catch (err) {
+      setApiError('Network error - please check your connection');
     } finally {
       setLoading(false);
-      setRequestInProgress(false);
     }
-  }, [requestInProgress, loading]);
+  };
   
-  return { 
-    loading, 
-    response, 
-    error, 
+  return {
+    loading,
+    response,
+    error: apiError,
     quickQuestions,
     askQuestion
   };
-}
-
-// Rex Avatar Component
-function RexAvatar({ isListening }: { isListening: boolean }) {
-  return (
-    <div className="text-center mb-6">
-      <div className={`w-24 h-24 mx-auto rounded-full flex items-center justify-center text-4xl transition-all duration-300 ${
-        isListening ? 'bg-red-100 animate-pulse' : 'bg-blue-100'
-      }`}>
-        🦅
-      </div>
-      <h2 className="text-xl font-bold text-gray-800 mt-3">Hi, I'm Rex!</h2>
-      <p className="text-gray-600">Your Columbia Golf Rules Expert</p>
-    </div>
-  );
-}
-
-// Voice Input Component
-function ColumbiaVoiceInput({ onTranscript, disabled }: { onTranscript: (text: string) => void; disabled: boolean }) {
-  const { isListening, transcript, isSupported, error, startListening, stopListening } = useVoiceRecognition();
-  const [hasSubmitted, setHasSubmitted] = useState(false);
-  
-  useEffect(() => {
-    if (transcript && !isListening && !hasSubmitted) {
-      console.log('🎤 Voice transcript ready, submitting:', transcript);
-      setHasSubmitted(true);
-      onTranscript(transcript);
-    }
-  }, [transcript, isListening, hasSubmitted, onTranscript]);
-  
-  const handleStartListening = () => {
-    console.log('🎤 Starting fresh voice session');
-    setHasSubmitted(false);
-    startListening();
-  };
-  
-  if (!isSupported) {
-    return (
-      <div className="text-center p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-        <p className="text-yellow-800 font-medium">Voice recognition not available</p>
-        <p className="text-sm text-yellow-600 mt-1">
-          Try using Chrome, Edge, or Safari for voice features
-        </p>
-      </div>
-    );
-  }
-  
-  return (
-    <div className="text-center space-y-4">
-      <button
-        onClick={isListening ? stopListening : handleStartListening}
-        disabled={disabled}
-        className={`
-          w-24 h-24 rounded-full text-white font-bold text-2xl shadow-lg
-          transition-all duration-200 transform active:scale-95
-          ${disabled 
-            ? 'bg-gray-400 cursor-not-allowed' 
-            : isListening 
-              ? 'bg-red-500 recording-pulse' 
-              : hasSubmitted
-                ? 'bg-green-500'
-                : 'bg-blue-600 hover:bg-blue-700 hover:scale-105'
-          }
-        `}
-      >
-        {isListening ? '🔴' : hasSubmitted ? '✅' : '🎤'}
-      </button>
-      
-      <div>
-        <p className="text-sm text-gray-600">
-          {isListening 
-            ? 'Listening... (I\'ll submit after 5 seconds of silence)' 
-            : hasSubmitted 
-              ? 'Question submitted!'
-              : 'Tap to ask Rex a question'
-          }
-        </p>
-        
-        {error && (
-          <p className="text-xs text-red-500 mt-1">{error}</p>
-        )}
-      </div>
-      
-      {transcript && (
-        <div className="p-3 bg-blue-50 rounded-lg border border-blue-200 text-left fade-in">
-          <p className="text-blue-800 font-medium text-sm">You said:</p>
-          <p className="text-blue-600 mt-1">"{transcript}"</p>
-          {hasSubmitted && (
-            <p className="text-green-600 text-sm mt-1">✅ Sent to Rex</p>
-          )}
-        </div>
-      )}
-    </div>
-  );
 }
 
 // Response Display Component
@@ -421,10 +299,10 @@ function ColumbiaRulesResponse({ response, loading }: { response: RulesResponse 
       {/* Answer */}
       <div className="prose prose-sm max-w-none mb-4">
         <div 
-    	  className="text-gray-800 leading-relaxed"
-	  dangerouslySetInnerHTML={{
-            __html: response.answer 
-	      .split('\n')
+          className="text-gray-800 leading-relaxed"
+          dangerouslySetInnerHTML={{
+            __html: response.answer
+              .split('\n')
               .map(line => {
                 if (line.trim().startsWith('• ')) {
                   const text = line.replace('• ', '');
@@ -434,13 +312,13 @@ function ColumbiaRulesResponse({ response, loading }: { response: RulesResponse 
                 }
               })
               .join('<br>')
-	      .replace(/<\/div><br><div style="display: flex/g, '</div><div style="display: flex') // Remove <br> between consecutive bullets
+              .replace(/<\/div><br><div style="display: flex/g, '</div><div style="display: flex')
           }}
         />
-       </div>
+      </div>
       
       {/* Footer */}
-      <div className="flex items-center justify-between pt-4 border-t border-gray-100" style={{ marginTop: '20px' }}>
+      <div className="flex items-center justify-between pt-6 border-t border-gray-100">
         <span className="text-xs text-gray-500">
           Response time: {response.response_time}s
         </span>
@@ -470,10 +348,10 @@ function ColumbiaQuickQuestions({ questions, onQuestionSelect, disabled }: {
         {questions.map((q) => (
           <button
             key={q.id}
-  	    onClick={() => onQuestionSelect(q.text)}
-  	    disabled={disabled}
-  	    className="flex items-center p-3 bg-gray-50 rounded-lg text-sm hover:bg-gray-100..."
-  	    style={{ padding: '20px', fontSize: '16px', minHeight: '60px' }}
+            onClick={() => onQuestionSelect(q.text)}
+            disabled={disabled}
+            className="flex items-center p-3 bg-gray-50 rounded-lg text-sm hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-left transition-colors"
+            style={{ padding: '20px', fontSize: '16px', minHeight: '60px' }}
           >
             <span className="text-lg mr-3">{q.icon}</span>
             <span className="text-gray-700">{q.text}</span>
@@ -488,20 +366,23 @@ function ColumbiaQuickQuestions({ questions, onQuestionSelect, disabled }: {
 export default function ColumbiaApp() {
   const [activeTab, setActiveTab] = useState<'voice' | 'text'>('voice');
   const [textInput, setTextInput] = useState('');
-  const { isListening, transcript, isSupported, error, startListening, stopListening } = useVoiceRecognition();
-  const [hasSubmitted, setHasSubmitted] = useState(false);  
-  const { loading, response, error, quickQuestions, askQuestion } = useColumbiaRulesAPI();
+  
+  // Voice recognition hook
+  const { isListening, transcript, isSupported, error: voiceError, startListening, stopListening } = useVoiceRecognition();
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  
+  // API hook
+  const { loading, response, error: apiError, quickQuestions, askQuestion } = useColumbiaRulesAPI();
 
+  // Inject Columbia-specific styles
   useEffect(() => {
-   const styleElement = document.createElement('style');
-   styleElement.textContent = columbiaStyles;
-   document.head.appendChild(styleElement);
-    
-   return () => {
-     if (document.head.contains(styleElement)) {
-       document.head.removeChild(styleElement);
-     }
-   };
+    const styleElement = document.createElement('style');
+    styleElement.textContent = columbiaStyles;
+    document.head.appendChild(styleElement);
+    return () => document.head.removeChild(styleElement);
+  }, []);
+
+  // Handle voice transcript submission
   useEffect(() => {
     if (transcript && !isListening && !hasSubmitted) {
       console.log('🎤 Voice transcript ready, submitting:', transcript);
@@ -513,10 +394,10 @@ export default function ColumbiaApp() {
   const handleStartListening = () => {
     console.log('🎤 Starting fresh voice session');
     setHasSubmitted(false);
+    setActiveTab('voice');
     startListening();
   };
-  }, []);  
-
+  
   const handleQuestion = (question: string) => {
     askQuestion(question, true);
     setTextInput('');
@@ -530,45 +411,46 @@ export default function ColumbiaApp() {
   };
   
   return (
-    <div className="min-h-screen columbia-container">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-blue-100 columbia-container">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b-4 border-blue-600">
-        <div className="max-w-md mx-auto px-6 py-4">
+      <header className="bg-white shadow-sm">
+        <div className="max-w-md mx-auto px-4 py-4">
           <div className="text-center">
             <h1 className="text-xl font-bold text-gray-800">Columbia Country Club</h1>
             <p className="text-sm text-gray-600">Golf Rules Assistant</p>
+            <div className="mt-2">🦅</div>
+            <h2 className="text-lg font-bold text-gray-800 mt-2">Hi, I'm Rex!</h2>
+            <p className="text-sm text-gray-600">Your Columbia Golf Rules Expert</p>
           </div>
         </div>
       </header>
       
       {/* Main Content */}
-      <main className="max-w-md mx-auto px-6 py-6 space-y-6">
-        {/* Rex Introduction */}
-        <RexAvatar isListening={loading} />
-        
+      <main className="max-w-md mx-auto px-4 py-6 space-y-6">
         {/* Tab Selector */}
         <div className="bg-white rounded-lg p-1 shadow-sm">
           <div className="grid grid-cols-2 gap-1">
             <button
-  	      onClick={isListening ? stopListening : handleStartListening}
-  	      className={`py-2 px-4 rounded-md font-medium text-sm transition ${
-    	      isListening 
-     	        ? 'bg-red-500 text-white' 
-      	        : 'bg-blue-600 text-white hover:bg-blue-700'
-  	      }`}
-  	      style={{ padding: '16px 32px', fontSize: '16px' }}
-	    >
-  	      {isListening ? '🔴 Listening...' : '🎤 Voice'}
-	    </button>
-            
-	    <button
+              onClick={isListening ? stopListening : handleStartListening}
+              className={`py-2 px-4 rounded-md font-medium text-sm transition ${
+                isListening 
+                  ? 'bg-red-500 text-white' 
+                  : activeTab === 'voice'
+                    ? 'bg-blue-600 text-white hover:bg-blue-700'
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+              }`}
+              style={{ padding: '16px 32px', fontSize: '16px' }}
+            >
+              {isListening ? '🔴 Listening...' : '🎤 Voice'}
+            </button>
+            <button
               onClick={() => setActiveTab('text')}
-  	      className={`py-2 px-4 rounded-md font-medium text-sm transition ${
-		activeTab === 'text' 
-                  ? 'bg-green-600 text-white' 
+              className={`py-2 px-4 rounded-md font-medium text-sm transition ${
+                activeTab === 'text' 
+                  ? 'bg-blue-600 text-white' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
-  	      style={{ padding: '16px 32px', fontSize: '16px' }}
+              style={{ padding: '16px 32px', fontSize: '16px' }}
             >
               ⌨️ Type
             </button>
@@ -577,27 +459,43 @@ export default function ColumbiaApp() {
         
         {/* Input Section */}
         <div className="bg-white rounded-lg p-6 shadow-lg">
-  	  {activeTab === 'voice' ? (
-    	    <div className="text-center space-y-4">
-     	      <p className="text-sm text-gray-600">
+          {activeTab === 'voice' ? (
+            <div className="text-center space-y-4">
+              <p className="text-sm text-gray-600">
                 {isListening 
                   ? 'Listening... (I\'ll submit after 5 seconds of silence)' 
-          	  : hasSubmitted 
-            	    ? 'Question submitted!'
-            	    : 'Tap the Voice button above to speak your question'
+                  : hasSubmitted 
+                    ? 'Question submitted!'
+                    : 'Tap the Voice button above to speak your question'
                 }
-      	      </p>
-      
-     	      {transcript && (
+              </p>
+              
+              {voiceError && (
+                <p className="text-xs text-red-500 mt-1">{voiceError}</p>
+              )}
+              
+              {transcript && (
                 <div className="p-3 bg-blue-50 rounded-lg border border-blue-200 text-left">
-          	  <p className="text-blue-800 font-medium text-sm">You said:</p>
-          	  <p className="text-blue-600 mt-1">"{transcript}"</p>
-       	        </div>
-      	      )}
+                  <p className="text-blue-800 font-medium text-sm">You said:</p>
+                  <p className="text-blue-600 mt-1">"{transcript}"</p>
+                  {hasSubmitted && (
+                    <p className="text-green-600 text-sm mt-1">✅ Sent to Rex</p>
+                  )}
+                </div>
+              )}
+              
+              {!isSupported && (
+                <div className="text-center p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                  <p className="text-yellow-800 font-medium">Voice recognition not available</p>
+                  <p className="text-sm text-yellow-600 mt-1">
+                    Try using Chrome, Edge, or Safari for voice features
+                  </p>
+                </div>
+              )}
             </div>
-  	  ) : (
-    	    <form onSubmit={handleTextSubmit} className="space-y-3">
-     	      <textarea
+          ) : (
+            <form onSubmit={handleTextSubmit} className="space-y-3">
+              <textarea
                 value={textInput}
                 onChange={(e) => setTextInput(e.target.value)}
                 placeholder="Type your golf rules question..."
@@ -618,9 +516,9 @@ export default function ColumbiaApp() {
         </div>
         
         {/* Error Display */}
-        {error && (
+        {apiError && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 fade-in">
-            <p className="text-red-800">{error}</p>
+            <p className="text-red-800">{apiError}</p>
           </div>
         )}
         
@@ -640,7 +538,7 @@ export default function ColumbiaApp() {
       {/* Footer */}
       <footer className="max-w-md mx-auto px-6 pb-6">
         <div className="text-center text-blue-600 text-xs">
-          <p>Powered by LinksLogic AI</p>
+          <p>Powered by LinksLogic AI • Columbia Golf Rules Expert</p>
         </div>
       </footer>
     </div>
