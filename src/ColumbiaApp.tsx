@@ -488,6 +488,8 @@ function ColumbiaQuickQuestions({ questions, onQuestionSelect, disabled }: {
 export default function ColumbiaApp() {
   const [activeTab, setActiveTab] = useState<'voice' | 'text'>('voice');
   const [textInput, setTextInput] = useState('');
+  const { isListening, transcript, isSupported, error, startListening, stopListening } = useVoiceRecognition();
+  const [hasSubmitted, setHasSubmitted] = useState(false);  
   const { loading, response, error, quickQuestions, askQuestion } = useColumbiaRulesAPI();
 
   useEffect(() => {
@@ -500,6 +502,19 @@ export default function ColumbiaApp() {
        document.head.removeChild(styleElement);
      }
    };
+  useEffect(() => {
+    if (transcript && !isListening && !hasSubmitted) {
+      console.log('🎤 Voice transcript ready, submitting:', transcript);
+      setHasSubmitted(true);
+      handleQuestion(transcript);
+    }
+  }, [transcript, isListening, hasSubmitted]);
+
+  const handleStartListening = () => {
+    console.log('🎤 Starting fresh voice session');
+    setHasSubmitted(false);
+    startListening();
+  };
   }, []);  
 
   const handleQuestion = (question: string) => {
@@ -535,16 +550,16 @@ export default function ColumbiaApp() {
         <div className="bg-white rounded-lg p-1 shadow-sm">
           <div className="grid grid-cols-2 gap-1">
             <button
-              onClick={() => setActiveTab('voice')}
+  	      onClick={isListening ? stopListening : handleStartListening}
   	      className={`py-2 px-4 rounded-md font-medium text-sm transition ${
-		activeTab === 'voice' 
-                  ? 'bg-green-600 text-white' 
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-              style={{ padding: '16px 32px', fontSize: '16px' }}
-            >
-              🎤 Voice
-            </button>
+    	      isListening 
+     	        ? 'bg-red-500 text-white' 
+      	        : 'bg-blue-600 text-white hover:bg-blue-700'
+  	      }`}
+  	      style={{ padding: '16px 32px', fontSize: '16px' }}
+	    >
+  	      {isListening ? '🔴 Listening...' : '🎤 Voice'}
+	    </button>
             
 	    <button
               onClick={() => setActiveTab('text')}
@@ -562,11 +577,27 @@ export default function ColumbiaApp() {
         
         {/* Input Section */}
         <div className="bg-white rounded-lg p-6 shadow-lg">
-          {activeTab === 'voice' ? (
-            <ColumbiaVoiceInput onTranscript={handleQuestion} disabled={loading} />
-          ) : (
-            <form onSubmit={handleTextSubmit} className="space-y-3">
-              <textarea
+  	  {activeTab === 'voice' ? (
+    	    <div className="text-center space-y-4">
+     	      <p className="text-sm text-gray-600">
+                {isListening 
+                  ? 'Listening... (I\'ll submit after 5 seconds of silence)' 
+          	  : hasSubmitted 
+            	    ? 'Question submitted!'
+            	    : 'Tap the Voice button above to speak your question'
+                }
+      	      </p>
+      
+     	      {transcript && (
+                <div className="p-3 bg-blue-50 rounded-lg border border-blue-200 text-left">
+          	  <p className="text-blue-800 font-medium text-sm">You said:</p>
+          	  <p className="text-blue-600 mt-1">"{transcript}"</p>
+       	        </div>
+      	      )}
+            </div>
+  	  ) : (
+    	    <form onSubmit={handleTextSubmit} className="space-y-3">
+     	      <textarea
                 value={textInput}
                 onChange={(e) => setTextInput(e.target.value)}
                 placeholder="Type your golf rules question..."
@@ -577,8 +608,8 @@ export default function ColumbiaApp() {
               <button
                 type="submit"
                 disabled={loading || !textInput.trim()}
-                className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700..."
-  	        style={{ padding: '20px', fontSize: '18px' }}
+                className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                style={{ padding: '20px', fontSize: '18px' }}
               >
                 {loading ? 'Rex is thinking...' : 'Ask Rex'}
               </button>
