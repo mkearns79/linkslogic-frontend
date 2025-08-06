@@ -542,7 +542,7 @@ export default function ColumbiaApp() {
               🎤 Voice
             </button>
             
-	      <button
+	    <button
               onClick={() => setActiveTab('text')}
   	      className={`py-2 px-4 rounded-md font-medium text-sm transition ${...}`}
   	      style={{ padding: '16px 32px', fontSize: '16px' }}
