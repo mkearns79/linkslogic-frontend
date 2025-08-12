@@ -316,6 +316,9 @@ function ColumbiaRulesResponse({ response, loading }: { response: RulesResponse 
           }}
         />
       </div>
+
+      {/* ADD THIS LINE - Blank space before footer */}
+      <div style={{ height: '20px' }}></div>	
       
       {/* Footer */}
       <div className="flex items-center justify-between pt-6 border-t border-gray-100">
@@ -526,7 +529,6 @@ export default function ColumbiaApp() {
         
         {/* Response Display */}
         <ColumbiaRulesResponse response={response} loading={loading} />
-	{response && <div className="mb-4"></div>}
         
         {/* Quick Questions */}
         {!loading && !response && (
