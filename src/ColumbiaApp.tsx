@@ -318,7 +318,7 @@ function ColumbiaRulesResponse({ response, loading }: { response: RulesResponse 
       </div>
       
       {/* Footer */}
-      <div className="flex items-center justify-between pt-16 border-t border-gray-100">
+      <div className="flex items-center justify-between pt-30 border-t border-gray-100">
         <span className="text-xs text-gray-500">
           Response time: {response.response_time}s
         </span>
