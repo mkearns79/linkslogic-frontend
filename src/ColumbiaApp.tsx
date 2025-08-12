@@ -426,8 +426,6 @@ export default function ColumbiaApp() {
                 style={{ 
                   width: '190px', 
                   height: '190px', 
-                  margin: '0', 
-                  display: 'block',
                   objectFit: 'contain'
                 }}
               />
