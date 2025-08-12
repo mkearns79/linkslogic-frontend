@@ -277,8 +277,12 @@ function ColumbiaRulesResponse({ response, loading }: { response: RulesResponse 
     <div className="bg-white rounded-lg p-6 shadow-lg fade-in">
       {/* Rex Header */}
       <div className="flex items-center mb-4">
-        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-          🦅
+        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3 overflow-hidden">
+          <img 
+            src="/images/rules-official.png" 
+            alt="Rules Official" 
+            className="w-8 h-8 object-cover"
+          />
         </div>
         <div>
           <p className="font-medium text-gray-800">Rex says:</p>
@@ -422,8 +426,13 @@ export default function ColumbiaApp() {
         <div className="max-w-md mx-auto px-4 py-4">
           <div className="text-center">
             <h1 className="text-xl font-bold text-gray-800">Columbia Country Club</h1>
-            <p className="text-sm text-gray-600">Golf Rules Assistant</p>
-            <div className="mt-2">🦅</div>
+            <div className="mt-2">
+  	      <img 
+                src="/images/rules-official.png" 
+                alt="Rules Official" 
+                className="w-12 h-12 mx-auto"
+              />
+            </div>
             <h2 className="text-lg font-bold text-gray-800 mt-2">Hi, I'm Rex!</h2>
             <p className="text-sm text-gray-600">Your Columbia Golf Rules Expert</p>
           </div>
