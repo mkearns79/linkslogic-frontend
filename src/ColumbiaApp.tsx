@@ -424,8 +424,8 @@ export default function ColumbiaApp() {
                 src="/images/rules-official.png" 
                 alt="Rules Official" 
                 style={{ 
-                  width: '100px', 
-                  height: '100px', 
+                  width: '120px', 
+                  height: '120px', 
                   margin: '0', 
                   display: 'block',
                   objectFit: 'contain'
@@ -479,7 +479,7 @@ export default function ColumbiaApp() {
                   ? 'Listening... (I\'ll submit after 5 seconds of silence)' 
                   : hasSubmitted 
                     ? 'Question submitted!'
-                    : 'Tap the Voice button above to speak your question'
+                    : 'Tap the Voice button to speak your question'
                 }
               </p>
               
