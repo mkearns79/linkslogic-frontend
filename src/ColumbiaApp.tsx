@@ -424,8 +424,8 @@ export default function ColumbiaApp() {
                 src="/images/rules-official.png" 
                 alt="Rules Official" 
                 style={{ 
-                  width: '120px', 
-                  height: '120px', 
+                  width: '150px', 
+                  height: '150px', 
                   margin: '0', 
                   display: 'block',
                   objectFit: 'contain'
