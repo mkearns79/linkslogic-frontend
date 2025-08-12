@@ -418,17 +418,22 @@ export default function ColumbiaApp() {
       <header className="bg-white shadow-sm">
         <div className="max-w-md mx-auto px-4 py-4">
           <div className="text-center">
-            <h1 className="text-lg font-bold text-gray-800">Columbia Country Club</h1>
-            <div className="mt-2 relative">
+            <h1 
+              className="font-bold text-gray-800" 
+              style={{ fontSize: '16px' }}
+            >
+              Columbia Country Club
+            </h1>
+            <div className="mt-2 w-full text-left">
   	      <img 
                 src="/images/rules-official.png" 
                 alt="Rules Official" 
                 style={{ 
                   width: '190px', 
                   height: '190px',
-		  position: 'absolute',
-		  left: '0', 
                   objectFit: 'contain'
+		  marginLeft: '0',
+		  float: 'left'
                 }}
               />
             </div>
