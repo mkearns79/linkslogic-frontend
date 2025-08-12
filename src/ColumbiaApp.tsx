@@ -423,7 +423,13 @@ export default function ColumbiaApp() {
   	      <img 
                 src="/images/rules-official.png" 
                 alt="Rules Official" 
-                className="w-2 h-2 mx-auto"
+                style={{ 
+                  width: '60px', 
+                  height: '60px', 
+                  margin: '0 auto', 
+                  display: 'block',
+                  objectFit: 'contain'
+                }}
               />
             </div>
             <h2 className="text-lg font-bold text-gray-800 mt-2">Hi, I'm Rex!</h2>
