@@ -419,7 +419,7 @@ export default function ColumbiaApp() {
         <div className="max-w-md mx-auto px-4 py-4">
           <div className="text-center">
             <h1 className="text-lg font-bold text-gray-800">Columbia Country Club</h1>
-            <div className="mt-2">
+            <div className="mt-2 flex justify-start">
   	      <img 
                 src="/images/rules-official.png" 
                 alt="Rules Official" 
