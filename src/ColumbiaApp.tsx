@@ -297,7 +297,7 @@ function ColumbiaRulesResponse({ response, loading }: { response: RulesResponse 
       </div>
       
       {/* Answer */}
-      <div className="prose prose-sm max-w-none mb-8">
+      <div className="prose prose-sm max-w-none mb-4">
         <div 
           className="text-gray-800 leading-relaxed"
           dangerouslySetInnerHTML={{
@@ -318,7 +318,7 @@ function ColumbiaRulesResponse({ response, loading }: { response: RulesResponse 
       </div>
       
       {/* Footer */}
-      <div className="flex items-center justify-between pt-6 border-t border-gray-100">
+      <div className="flex items-center justify-between pt-10 border-t border-gray-100">
         <span className="text-xs text-gray-500">
           Response time: {response.response_time}s
         </span>
