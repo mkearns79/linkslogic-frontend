@@ -279,7 +279,7 @@ function ColumbiaRulesResponse({ response, loading }: { response: RulesResponse 
       <div className="flex items-center mb-4">
         <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3 overflow-hidden">
           <img 
-            src="/linkslogic-frontend/images/rules-official.png" 
+            src="/images/rules-official.png" 
             alt="Rules Official" 
             className="w-8 h-8 object-cover"
           />
@@ -428,7 +428,7 @@ export default function ColumbiaApp() {
             <h1 className="text-xl font-bold text-gray-800">Columbia Country Club</h1>
             <div className="mt-2">
   	      <img 
-                src="/linkslogic-frontend/images/rules-official.png" 
+                src="/images/rules-official.png" 
                 alt="Rules Official" 
                 className="w-12 h-12 mx-auto"
               />
