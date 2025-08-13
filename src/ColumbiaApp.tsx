@@ -427,24 +427,13 @@ export default function ColumbiaApp() {
       
             {/* Side-by-side layout: Text/Buttons on left, Rex on right */}
             <div className="mt-4 flex items-center justify-between">
-              {/* Left side - Text and buttons */}
-              <div className="flex-1">
+              <div className="text-left">
                 <h2 className="text-lg font-bold text-gray-800">Hi, I'm Rex!</h2>
-                <p className="text-sm text-gray-600 mb-3">Your Columbia Golf Rules Expert</p>
-          
-                {/* Voice/Type buttons */}
-                <div className="space-y-2">
-                  <button className="bg-blue-600 text-white px-3 py-1 rounded text-sm">
-                    🎤 Voice
-                  </button>
-                  <button className="text-gray-600 px-3 py-1 rounded text-sm">
-                    ⌨️ Type
-                  </button>
-                </div>
+                <p className="text-sm text-gray-600">Your Columbia Golf Rules Expert</p>
               </div>
         
               {/* Right side - Rex image */}
-              <div className="ml-4">
+              <div>
                 <img 
                   src="/images/rules-official.png" 
                   alt="Rules Official" 
@@ -456,11 +445,6 @@ export default function ColumbiaApp() {
                 />
               </div>
             </div>
-      
-            {/* Instructions underneath */}
-            <p className="text-sm text-gray-600 mt-4">
-              Tap the Voice or Type Button to ask your question, or tap one of the Common Questions below
-            </p>
           </div>
         </div>
       </header>
