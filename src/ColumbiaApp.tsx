@@ -416,6 +416,7 @@ export default function ColumbiaApp() {
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-blue-100 columbia-container">
       <header className="bg-white shadow-sm">
         <div className="max-w-md mx-auto px-4 py-4">
+          {/* Keep Columbia Country Club centered at top */}
           <div className="text-center">
             <h1 
               className="font-bold text-gray-800" 
@@ -423,27 +424,27 @@ export default function ColumbiaApp() {
             >
               Columbia Country Club
             </h1>
-            <p className="text-sm text-gray-600">Golf Rules Assistant</p>
+          </div>
+    
+          {/* Side-by-side: Text on left, Rex on right */}
+          <div className="mt-4 flex items-center justify-between">
+            {/* Left side - Text aligned left */}
+            <div className="text-left">
+              <h2 className="text-lg font-bold text-gray-800">Hi, I'm Rex!</h2>
+              <p className="text-sm text-gray-600">Your Columbia Golf Rules Expert</p>
+            </div>
       
-            {/* Side-by-side layout: Text/Buttons on left, Rex on right */}
-            <div className="mt-4 flex items-center justify-between">
-              <div className="text-left">
-                <h2 className="text-lg font-bold text-gray-800">Hi, I'm Rex!</h2>
-                <p className="text-sm text-gray-600">Your Columbia Golf Rules Expert</p>
-              </div>
-        
-              {/* Right side - Rex image */}
-              <div>
-                <img 
-                  src="/images/rules-official.png" 
-                  alt="Rules Official" 
-                  style={{ 
-                    width: '190px', 
-                    height: '190px', 
-                    objectFit: 'contain'
-                  }}
-                />
-              </div>
+            {/* Right side - Rex image */}
+            <div className="flex-shrink-0">
+              <img 
+                src="/images/rules-official.png" 
+                alt="Rules Official" 
+                style={{ 
+                  width: '200px', 
+                  height: '200px', 
+                  objectFit: 'contain'
+                }}
+              />
             </div>
           </div>
         </div>
