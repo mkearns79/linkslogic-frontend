@@ -298,7 +298,7 @@ function VoiceInput({ onTranscript, disabled }: { onTranscript: (text: string) =
 }
 
 // Response Display Component
-function RulesResponseDisplay({ response, loading }: { response: RulesResponse | null; loading: boolean }) {
+function RulesResponse({ response, loading }: { response: RulesResponse | null; loading: boolean }) {
   if (loading) {
     return (
       <div className="bg-white rounded-lg p-6 shadow-lg fade-in">
@@ -363,9 +363,14 @@ function RulesResponseDisplay({ response, loading }: { response: RulesResponse |
       
       {/* Answer */}
       <div className="prose prose-sm max-w-none mb-4">
-        <p className="text-gray-800 leading-relaxed">
-          {response.answer}
-        </p>
+        <div 
+    	  className="text-gray-800 leading-relaxed"
+          dangerouslySetInnerHTML={{
+            __html: response.answer
+               .replace(/\n/g, '<br>')
+               .replace(/•/g, '&bull;')
+          }}
+        />
       </div>
       
       {/* Footer */}
@@ -519,7 +524,7 @@ export default function GeneralApp() {
         )}
         
         {/* Response Display */}
-        <RulesResponseDisplay response={response} loading={loading} />
+        <RulesResponse response={response} loading={loading} />
         
         {/* Quick Questions */}
         {!loading && !response && (

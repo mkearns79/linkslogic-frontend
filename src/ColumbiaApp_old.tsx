@@ -277,9 +277,6 @@ function ColumbiaRulesResponse({ response, loading }: { response: RulesResponse 
     <div className="bg-white rounded-lg p-6 shadow-lg fade-in">
       {/* Rex Header */}
       <div className="flex items-center mb-4">
-        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-          🦅
-        </div>
         <div>
           <p className="font-medium text-gray-800">Rex says:</p>
           <div className="flex items-center space-x-2">
@@ -316,6 +313,9 @@ function ColumbiaRulesResponse({ response, loading }: { response: RulesResponse 
           }}
         />
       </div>
+
+      {/* ADD THIS LINE - Blank space before footer */}
+      <div style={{ height: '20px' }}></div>	
       
       {/* Footer */}
       <div className="flex items-center justify-between pt-6 border-t border-gray-100">
@@ -343,7 +343,7 @@ function ColumbiaQuickQuestions({ questions, onQuestionSelect, disabled }: {
   
   return (
     <div className="bg-white rounded-lg p-4 shadow-sm">
-      <p className="text-gray-600 text-sm mb-3 font-medium">Common Columbia Rules Questions:</p>
+      <p className="text-gray-600 text-sm mb-3 font-medium">Common Columbia Rules Situations:</p>
       <div className="grid gap-2">
         {questions.map((q) => (
           <button
@@ -391,7 +391,7 @@ export default function ColumbiaApp() {
       setHasSubmitted(true);
       handleQuestion(transcript);
     }
-  }, [transcript, isListening, hasSubmitted, handleQuestion]);
+  }, [transcript, isListening, hasSubmitted]);
 
   const handleStartListening = () => {
     console.log('🎤 Starting fresh voice session');
@@ -414,15 +414,38 @@ export default function ColumbiaApp() {
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-blue-100 columbia-container">
-      {/* Header */}
       <header className="bg-white shadow-sm">
         <div className="max-w-md mx-auto px-4 py-4">
+          {/* Keep Columbia Country Club centered at top */}
           <div className="text-center">
-            <h1 className="text-xl font-bold text-gray-800">Columbia Country Club</h1>
-            <p className="text-sm text-gray-600">Golf Rules Assistant</p>
-            <div className="mt-2">🦅</div>
-            <h2 className="text-lg font-bold text-gray-800 mt-2">Hi, I'm Rex!</h2>
-            <p className="text-sm text-gray-600">Your Columbia Golf Rules Expert</p>
+            <h1 
+              className="font-bold text-gray-800" 
+              style={{ fontSize: '16px' }}
+            >
+              Columbia Country Club
+            </h1>
+          </div>
+    
+          {/* Side-by-side: Text on left, Rex on right */}
+          <div className="mt-4 flex items-center justify-between">
+            {/* Left side - Text aligned left */}
+            <div className="text-left">
+              <h2 className="text-lg font-bold text-gray-800">Hi, I'm Rex!</h2>
+              <p className="text-sm text-gray-600">Your Columbia Golf Rules Expert</p>
+            </div>
+      
+            {/* Right side - Rex image */}
+            <div className="flex-shrink-0">
+              <img 
+                src="/images/rules-official.png" 
+                alt="Rules Official" 
+                style={{ 
+                  width: '200px', 
+                  height: '200px', 
+                  objectFit: 'contain'
+                }}
+              />
+            </div>
           </div>
         </div>
       </header>
@@ -468,7 +491,7 @@ export default function ColumbiaApp() {
                   ? 'Listening... (I\'ll submit after 5 seconds of silence)' 
                   : hasSubmitted 
                     ? 'Question submitted!'
-                    : 'Tap the Voice button above to speak your question'
+                    : 'Tap the Voice or Type Button to ask your question, or tap one of the common situations below'
                 }
               </p>
               
@@ -526,7 +549,6 @@ export default function ColumbiaApp() {
         
         {/* Response Display */}
         <ColumbiaRulesResponse response={response} loading={loading} />
-	{response && <div className="mb-4"></div>}
         
         {/* Quick Questions */}
         {!loading && !response && (
