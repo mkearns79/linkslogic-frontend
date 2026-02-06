@@ -391,7 +391,8 @@ export default function ColumbiaApp() {
       setHasSubmitted(true);
       handleQuestion(transcript);
     }
-  }, [transcript, isListening, hasSubmitted, handleQuestion]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [transcript, isListening, hasSubmitted]);
 
   const handleStartListening = () => {
     console.log('🎤 Starting fresh voice session');
