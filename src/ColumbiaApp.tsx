@@ -248,54 +248,8 @@ function ColumbiaRulesResponse({ response, loading }: { response: RulesResponse 
   
   if (!response) return null;
   
-  const getRuleTypeConfig = (type: string) => {
-    switch (type) {
-      case 'local':
-        return { color: 'bg-blue-600', label: 'Columbia CC Local Rule' };
-      case 'official':
-        return { color: 'bg-green-600', label: 'Official Rules of Golf' };
-      default:
-        return { color: 'bg-purple-600', label: 'Combined Rules' };
-    }
-  };
-  
-  const getConfidenceConfig = (confidence: string) => {
-    switch (confidence) {
-      case 'high':
-        return { color: 'text-green-600', icon: '✅' };
-      case 'medium':
-        return { color: 'text-yellow-600', icon: '⚠️' };
-      default:
-        return { color: 'text-red-600', icon: '❓' };
-    }
-  };
-  
-  const ruleConfig = getRuleTypeConfig(response.rule_type);
-  const confidenceConfig = getConfidenceConfig(response.confidence);
-  
   return (
     <div className="bg-white rounded-lg p-6 shadow-lg fade-in">
-      {/* Rex Header */}
-      <div className="flex items-center mb-4">
-        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-          🦅
-        </div>
-        <div>
-          <p className="font-medium text-gray-800">Rex says:</p>
-          <div className="flex items-center space-x-2">
-            <span className={`${ruleConfig.color} text-white px-2 py-1 rounded-full text-xs font-medium`}>
-              {ruleConfig.label}
-            </span>
-            {response.rule_numbers && response.rule_numbers.length > 0 && (
-              <span className="text-gray-600 text-xs">
-                Rules: {response.rule_numbers.join(', ')}
-              </span>
-            )}
-            <span className={confidenceConfig.color}>{confidenceConfig.icon}</span>
-          </div>
-        </div>
-      </div>
-      
       {/* Answer */}
       <div className="prose prose-sm max-w-none mb-4">
         <div 
@@ -421,9 +375,6 @@ export default function ColumbiaApp() {
           <div className="text-center">
             <h1 className="text-xl font-bold text-gray-800">Columbia Country Club</h1>
             <p className="text-sm text-gray-600">Golf Rules Assistant</p>
-            <div className="mt-2">🦅</div>
-            <h2 className="text-lg font-bold text-gray-800 mt-2">Hi, I'm Rex!</h2>
-            <p className="text-sm text-gray-600">Your Columbia Golf Rules Expert</p>
           </div>
         </div>
       </header>
