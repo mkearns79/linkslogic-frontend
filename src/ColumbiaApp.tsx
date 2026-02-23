@@ -402,7 +402,7 @@ export default function ColumbiaApp() {
               }`}
               style={{ padding: '16px 32px', fontSize: '16px' }}
             >
-              {isListening ? '🔴 Listening...' : 🎤 Voice'}
+              {isListening ? '🔴 Listening...' : '🎤 Voice'}
             </button>
             <button
               onClick={() => setActiveTab('text')}
