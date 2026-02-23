@@ -284,7 +284,7 @@ function ColumbiaRulesResponse({ response, loading }: { response: RulesResponse 
           onClick={() => window.location.reload()}
           className="text-blue-600 text-sm hover:text-blue-800"
         >
-          ðŸ”„ Ask Another Question
+          🔄 Ask Another Question
         </button>
       </div>
     </div>
@@ -345,7 +345,7 @@ export default function ColumbiaApp() {
   // Handle voice transcript submission
   useEffect(() => {
     if (transcript && !isListening && !hasSubmitted) {
-      console.log('ðŸŽ¤ Voice transcript ready, submitting:', transcript);
+      console.log('🎤 Voice transcript ready, submitting:', transcript);
       setHasSubmitted(true);
       handleQuestion(transcript);
     }
@@ -353,7 +353,7 @@ export default function ColumbiaApp() {
   }, [transcript, isListening, hasSubmitted]);
 
   const handleStartListening = () => {
-    console.log('ðŸŽ¤ Starting fresh voice session');
+    console.log('🎤 Starting fresh voice session');
     setHasSubmitted(false);
     setActiveTab('voice');
     startListening();
@@ -399,7 +399,7 @@ export default function ColumbiaApp() {
               }`}
               style={{ padding: '16px 32px', fontSize: '16px' }}
             >
-              {isListening ? 'ðŸ”´ Listening...' : 'ðŸŽ¤ Voice'}
+              {isListening ? 'ðŸ”´ Listening...' : '🎤 Voice'}
             </button>
             <button
               onClick={() => setActiveTab('text')}
@@ -410,7 +410,7 @@ export default function ColumbiaApp() {
               }`}
               style={{ padding: '16px 32px', fontSize: '16px' }}
             >
-              âŒ¨ï¸ Type
+              ⌨️ Type
             </button>
           </div>
         </div>
@@ -497,7 +497,7 @@ export default function ColumbiaApp() {
       {/* Footer */}
       <footer className="max-w-md mx-auto px-6 pb-6">
         <div className="text-center text-blue-600 text-xs">
-          <p>Powered by LinksLogic AI â€¢ Columbia Golf Rules Expert</p>
+          <p>Powered by LinksLogic AI • Columbia Golf Rules Expert</p>
         </div>
       </footer>
     </div>
