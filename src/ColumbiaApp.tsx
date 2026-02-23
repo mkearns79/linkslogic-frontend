@@ -130,7 +130,7 @@ function useVoiceRecognition() {
           }
     
           submitTimeout = setTimeout(() => {
-            console.log('ðŸŽ¤ Auto-submitting after 5 seconds of silence');
+            console.log('🎤 Auto-submitting after 5 seconds of silence');
             recognition.stop();
           }, 5000);
         }
@@ -348,7 +348,7 @@ export default function ColumbiaApp() {
   // Handle voice transcript submission
   useEffect(() => {
     if (transcript && !isListening && !hasSubmitted) {
-      console.log(🎤 Voice transcript ready, submitting:', transcript);
+      console.log('🎤 Voice transcript ready, submitting:', transcript);
       setHasSubmitted(true);
       handleQuestion(transcript);
     }
@@ -356,7 +356,7 @@ export default function ColumbiaApp() {
   }, [transcript, isListening, hasSubmitted]);
 
   const handleStartListening = () => {
-    console.log(🎤 Starting fresh voice session');
+    console.log('🎤 Starting fresh voice session');
     setHasSubmitted(false);
     setActiveTab('voice');
     startListening();
@@ -402,7 +402,7 @@ export default function ColumbiaApp() {
               }`}
               style={{ padding: '16px 32px', fontSize: '16px' }}
             >
-              {isListening ? 'ðŸ”´ Listening...' : 🎤 Voice'}
+              {isListening ? '🔴 Listening...' : 🎤 Voice'}
             </button>
             <button
               onClick={() => setActiveTab('text')}
@@ -440,7 +440,7 @@ export default function ColumbiaApp() {
                   <p className="text-blue-800 font-medium text-sm">You said:</p>
                   <p className="text-blue-600 mt-1">"{transcript}"</p>
                   {hasSubmitted && (
-                    <p className="text-green-600 text-sm mt-1">âœ… Sent to Rex</p>
+                    <p className="text-green-600 text-sm mt-1">✅ Sent to Rex</p>
                   )}
                 </div>
               )}
