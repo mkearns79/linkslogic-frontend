@@ -275,8 +275,11 @@ function ColumbiaRulesResponse({ response, loading }: { response: RulesResponse 
         />
       </div>
       
+      {/* Spacer */}
+      <div style={{height: '24px'}}></div>
+
       {/* Footer */}
-      <div className="flex items-center justify-between pt-6 mt-4 border-t border-gray-100">
+      <div className="flex items-center justify-between pt-6 border-t border-gray-100">
         <span className="text-xs text-gray-500">
           Response time: {response.response_time}s
         </span>
@@ -284,7 +287,7 @@ function ColumbiaRulesResponse({ response, loading }: { response: RulesResponse 
           onClick={() => window.location.reload()}
           className="text-blue-600 text-sm hover:text-blue-800"
         >
-          🔄 Ask Another Question
+          ðŸ”„ Ask Another Question
         </button>
       </div>
     </div>
@@ -345,7 +348,7 @@ export default function ColumbiaApp() {
   // Handle voice transcript submission
   useEffect(() => {
     if (transcript && !isListening && !hasSubmitted) {
-      console.log('🎤 Voice transcript ready, submitting:', transcript);
+      console.log('ðŸŽ¤ Voice transcript ready, submitting:', transcript);
       setHasSubmitted(true);
       handleQuestion(transcript);
     }
@@ -353,7 +356,7 @@ export default function ColumbiaApp() {
   }, [transcript, isListening, hasSubmitted]);
 
   const handleStartListening = () => {
-    console.log('🎤 Starting fresh voice session');
+    console.log('ðŸŽ¤ Starting fresh voice session');
     setHasSubmitted(false);
     setActiveTab('voice');
     startListening();
@@ -399,7 +402,7 @@ export default function ColumbiaApp() {
               }`}
               style={{ padding: '16px 32px', fontSize: '16px' }}
             >
-              {isListening ? 'ðŸ”´ Listening...' : '🎤 Voice'}
+              {isListening ? 'ðŸ”´ Listening...' : 'ðŸŽ¤ Voice'}
             </button>
             <button
               onClick={() => setActiveTab('text')}
@@ -410,7 +413,7 @@ export default function ColumbiaApp() {
               }`}
               style={{ padding: '16px 32px', fontSize: '16px' }}
             >
-              ⌨️ Type
+              âŒ¨ï¸ Type
             </button>
           </div>
         </div>
@@ -497,7 +500,7 @@ export default function ColumbiaApp() {
       {/* Footer */}
       <footer className="max-w-md mx-auto px-6 pb-6">
         <div className="text-center text-blue-600 text-xs">
-          <p>Powered by LinksLogic AI • Columbia Golf Rules Expert</p>
+          <p>Powered by LinksLogic AI â€¢ Columbia Golf Rules Expert</p>
         </div>
       </footer>
     </div>
