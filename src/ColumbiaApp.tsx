@@ -130,7 +130,7 @@ function useVoiceRecognition() {
           }
     
           submitTimeout = setTimeout(() => {
-            console.log('🎤 Auto-submitting after 5 seconds of silence');
+            console.log('ðŸŽ¤ Auto-submitting after 5 seconds of silence');
             recognition.stop();
           }, 5000);
         }
@@ -258,9 +258,13 @@ function ColumbiaRulesResponse({ response, loading }: { response: RulesResponse 
             __html: response.answer
               .split('\n')
               .map(line => {
-                if (line.trim().startsWith('• ')) {
-                  const text = line.replace('• ', '');
-                  return `<div style="display: flex; margin-bottom: 2px; padding-left: 0;"><span style="margin-right: 8px;">&bull;</span><span>${text}</span></div>`;
+                const trimmed = line.trim();
+                if (trimmed.startsWith('\u2022 ') || trimmed.startsWith('• ')) {
+                  const text = trimmed.replace(/^[•\u2022]\s*/, '');
+                  return `<div style="display: flex; margin-bottom: 2px; padding-left: 16px;"><span style="margin-right: 8px;">•</span><span>${text}</span></div>`;
+                } else if (trimmed.startsWith('- ')) {
+                  const text = trimmed.replace(/^-\s*/, '');
+                  return `<div style="display: flex; margin-bottom: 2px; padding-left: 40px;"><span style="margin-right: 8px;">-</span><span>${text}</span></div>`;
                 } else {
                   return line;
                 }
@@ -272,7 +276,7 @@ function ColumbiaRulesResponse({ response, loading }: { response: RulesResponse 
       </div>
       
       {/* Footer */}
-      <div className="flex items-center justify-between pt-6 border-t border-gray-100">
+      <div className="flex items-center justify-between pt-6 mt-4 border-t border-gray-100">
         <span className="text-xs text-gray-500">
           Response time: {response.response_time}s
         </span>
@@ -280,7 +284,7 @@ function ColumbiaRulesResponse({ response, loading }: { response: RulesResponse 
           onClick={() => window.location.reload()}
           className="text-blue-600 text-sm hover:text-blue-800"
         >
-          🔄 Ask Another Question
+          ðŸ”„ Ask Another Question
         </button>
       </div>
     </div>
@@ -341,7 +345,7 @@ export default function ColumbiaApp() {
   // Handle voice transcript submission
   useEffect(() => {
     if (transcript && !isListening && !hasSubmitted) {
-      console.log('🎤 Voice transcript ready, submitting:', transcript);
+      console.log('ðŸŽ¤ Voice transcript ready, submitting:', transcript);
       setHasSubmitted(true);
       handleQuestion(transcript);
     }
@@ -349,7 +353,7 @@ export default function ColumbiaApp() {
   }, [transcript, isListening, hasSubmitted]);
 
   const handleStartListening = () => {
-    console.log('🎤 Starting fresh voice session');
+    console.log('ðŸŽ¤ Starting fresh voice session');
     setHasSubmitted(false);
     setActiveTab('voice');
     startListening();
@@ -395,7 +399,7 @@ export default function ColumbiaApp() {
               }`}
               style={{ padding: '16px 32px', fontSize: '16px' }}
             >
-              {isListening ? '🔴 Listening...' : '🎤 Voice'}
+              {isListening ? 'ðŸ”´ Listening...' : 'ðŸŽ¤ Voice'}
             </button>
             <button
               onClick={() => setActiveTab('text')}
@@ -406,7 +410,7 @@ export default function ColumbiaApp() {
               }`}
               style={{ padding: '16px 32px', fontSize: '16px' }}
             >
-              ⌨️ Type
+              âŒ¨ï¸ Type
             </button>
           </div>
         </div>
@@ -433,7 +437,7 @@ export default function ColumbiaApp() {
                   <p className="text-blue-800 font-medium text-sm">You said:</p>
                   <p className="text-blue-600 mt-1">"{transcript}"</p>
                   {hasSubmitted && (
-                    <p className="text-green-600 text-sm mt-1">✅ Sent to Rex</p>
+                    <p className="text-green-600 text-sm mt-1">âœ… Sent to Rex</p>
                   )}
                 </div>
               )}
@@ -493,7 +497,7 @@ export default function ColumbiaApp() {
       {/* Footer */}
       <footer className="max-w-md mx-auto px-6 pb-6">
         <div className="text-center text-blue-600 text-xs">
-          <p>Powered by LinksLogic AI • Columbia Golf Rules Expert</p>
+          <p>Powered by LinksLogic AI â€¢ Columbia Golf Rules Expert</p>
         </div>
       </footer>
     </div>
