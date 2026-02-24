@@ -421,7 +421,7 @@ export default function ColumbiaApp() {
             <div className="text-center space-y-4">
               <p className="text-sm text-gray-600">
                 {isListening 
-                  ? 'Listening... (I\'ll submit after 5 seconds of silence)' 
+                  ? 'Listening... (hit record when finished)' 
                   : hasSubmitted 
                     ? 'Question submitted!'
                     : 'Tap the Voice button above to speak your question'
