@@ -77,100 +77,98 @@ interface QuickQuestion {
 // Voice Recognition Hook
 function useVoiceRecognition() {
   const [isListening, setIsListening] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [isSupported, setIsSupported] = useState(false);
   const [voiceError, setVoiceError] = useState<string | null>(null);
-  const recognitionRef = useRef<any>(null);
-  
-  useEffect(() => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    setIsSupported(!!SpeechRecognition);
-    
-    if (SpeechRecognition) {
-      recognitionRef.current = new SpeechRecognition();
-      const recognition = recognitionRef.current;
-      
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.lang = 'en-US';
-      recognition.maxAlternatives = 1;
-      
-      recognition.onstart = () => {
-        setIsListening(true);
-        setVoiceError(null);
-      };
-      
-      let submitTimeout: NodeJS.Timeout | null = null;
-      let accumulatedTranscript = '';
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-      recognition.onresult = (event: any) => {
-        let finalTranscript = '';
-        let interimTranscript = '';
-  
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          const transcript = event.results[i][0].transcript;
-    
-          if (event.results[i].isFinal) {
-            finalTranscript += transcript;
-          } else {
-            interimTranscript += transcript;
-          }
-        }
-  
-        if (finalTranscript) {
-          accumulatedTranscript += finalTranscript + ' ';
-        }
-  
-        const currentTranscript = accumulatedTranscript + interimTranscript;
-        if (currentTranscript.trim()) {
-          setTranscript(currentTranscript.trim());
-    
-          if (submitTimeout) {
-            clearTimeout(submitTimeout);
-          }
-    
-          submitTimeout = setTimeout(() => {
-            console.log('🎤 Auto-submitting after 5 seconds of silence');
-            recognition.stop();
-          }, 5000);
-        }
-      };
-      
-      recognition.onend = () => {
-        setIsListening(false);
-        if (submitTimeout) {
-          clearTimeout(submitTimeout);
-        }
-      };
-      
-      recognition.onerror = (event: any) => {
-        setVoiceError(`Speech recognition error: ${event.error}`);
-        setIsListening(false);
-      };
-    }
+  useEffect(() => {
+    setIsSupported(!!navigator.mediaDevices?.getUserMedia);
   }, []);
-  
-  const startListening = useCallback(() => {
-    if (recognitionRef.current && !isListening) {
+
+  const startListening = useCallback(async () => {
+    try {
       setTranscript('');
       setVoiceError(null);
-      recognitionRef.current.start();
+      setIsTranscribing(false);
+      chunksRef.current = [];
+
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+      mediaRecorderRef.current = mediaRecorder;
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          chunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        stream.getTracks().forEach(track => track.stop());
+        setIsListening(false);
+        setIsTranscribing(true);
+
+        const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' });
+
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'recording.webm');
+
+        try {
+          const API_URL = process.env.REACT_APP_API_URL || '';
+          const response = await fetch(`${API_URL}/api/transcribe`, {
+            method: 'POST',
+            body: formData,
+          });
+          const data = await response.json();
+
+          if (data.success && data.transcript) {
+            setTranscript(data.transcript);
+          } else {
+            setVoiceError(data.error || 'Transcription failed');
+          }
+        } catch (err) {
+          setVoiceError('Failed to transcribe audio');
+        }
+
+        setIsTranscribing(false);
+      };
+
+      mediaRecorder.start(1000);
+      setIsListening(true);
+
+      // Auto-stop after 30 seconds
+      silenceTimerRef.current = setTimeout(() => {
+        if (mediaRecorderRef.current?.state === 'recording') {
+          mediaRecorderRef.current.stop();
+        }
+      }, 30000);
+
+    } catch (err) {
+      setVoiceError('Microphone access denied');
+      setIsListening(false);
     }
-  }, [isListening]);
-  
+  }, []);
+
   const stopListening = useCallback(() => {
-    if (recognitionRef.current && isListening) {
-      recognitionRef.current.stop();
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current);
     }
-  }, [isListening]);
-  
+    if (mediaRecorderRef.current?.state === 'recording') {
+      mediaRecorderRef.current.stop();
+    }
+  }, []);
+
   return {
     isListening,
+    isTranscribing,
     transcript,
     isSupported,
     error: voiceError,
     startListening,
-    stopListening
+    stopListening,
   };
 }
 
@@ -329,7 +327,7 @@ export default function ColumbiaApp() {
   const [textInput, setTextInput] = useState('');
   
   // Voice recognition hook
-  const { isListening, transcript, isSupported, error: voiceError, startListening, stopListening } = useVoiceRecognition();
+  const { isListening, isTranscribing, transcript, isSupported, error: voiceError, startListening, stopListening } = useVoiceRecognition();
   const [hasSubmitted, setHasSubmitted] = useState(false);
   
   // API hook
@@ -347,13 +345,13 @@ export default function ColumbiaApp() {
 
   // Handle voice transcript submission
   useEffect(() => {
-    if (transcript && !isListening && !hasSubmitted) {
-      console.log('🎤 Voice transcript ready, submitting:', transcript);
+    if (transcript && !isListening && !isTranscribing && !hasSubmitted) {
+      console.log('🎤 Whisper transcript:', transcript);
       setHasSubmitted(true);
       handleQuestion(transcript);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [transcript, isListening, hasSubmitted]);
+  }, [transcript, isListening, isTranscribing, hasSubmitted]);
 
   const handleStartListening = () => {
     console.log('🎤 Starting fresh voice session');
@@ -402,7 +400,7 @@ export default function ColumbiaApp() {
               }`}
               style={{ padding: '16px 32px', fontSize: '16px' }}
             >
-              {isListening ? '🔴 Listening...' : '🎤 Voice'}
+              {isListening ? '🔴 Listening...' : isTranscribing ? '⏳ Transcribing...' : '🎤 Voice'}
             </button>
             <button
               onClick={() => setActiveTab('text')}
