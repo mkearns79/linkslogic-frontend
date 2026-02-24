@@ -117,8 +117,7 @@ function useVoiceRecognition() {
         formData.append('audio', audioBlob, 'recording.webm');
 
         try {
-          const API_URL = process.env.REACT_APP_API_URL || '';
-          const response = await fetch(`${API_URL}/api/transcribe`, {
+          const response = await fetch(`${API_BASE_URL}/api/transcribe`, {
             method: 'POST',
             body: formData,
           });
