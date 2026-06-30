@@ -285,7 +285,7 @@ function formatResponse(text: string) {
   return elements;
 }
 
-function ResponseDisplay({ response, loading }: { response: RulesResponse | null; loading: boolean }) {
+function ResponseDisplay({ response, loading, onReset }: { response: RulesResponse | null; loading: boolean; onReset: () => void }) {
   if (loading) {
     return (
       <div className="loading-container fade-in">
@@ -322,9 +322,9 @@ function ResponseDisplay({ response, loading }: { response: RulesResponse | null
       </div>
       <div className="response-footer">
         <span className="response-time">Response time: {response.response_time}s</span>
-        <button className="ask-again-button" onClick={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); resetResponse(); setTextInput(''); setHasSubmitted(false); }}>
-          Ask another question
-        </button>
+        <button className="ask-again-button" onClick={onReset}>
+  	  Ask another question
+	</button>
       </div>
     </div>
   );
@@ -444,7 +444,12 @@ export default function ColumbiaApp() {
         {voiceError && <div className="error-display">{voiceError}</div>}
         {error && <div className="error-display">{error}</div>}
 
-        <ResponseDisplay response={response} loading={loading} />
+        <ResponseDisplay response={response} loading={loading} onReset={() => {
+  	  window.scrollTo({ top: 0, behavior: 'smooth' });
+  	  resetResponse();
+  	  setTextInput('');
+  	  setHasSubmitted(false);
+	}} />
 
         {showQuickQuestions && (
           <>
