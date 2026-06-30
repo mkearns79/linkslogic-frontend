@@ -89,6 +89,12 @@ const appStyles = `
   .slogan { font-size: 10px; color: ${colors.textTertiary}; margin: 4px 0 0 0; }
   .fade-in { animation: fadeIn 0.3s ease; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  .rex-intro { background: #f0f7f4; border: 0.5px solid #d4e8dc; border-radius: 14px; padding: 16px; }
+  .rex-intro-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .rex-intro-dismiss { background: none; border: none; font-size: 16px; color: #999; cursor: pointer; padding: 0; line-height: 1; }
+  .rex-intro-dismiss:hover { color: #666; }
+  .rex-intro-title { font-size: 15px; font-weight: 600; color: #1a3c34; margin: 0 0 6px 0; }
+  .rex-intro-text { font-size: 13px; color: #555; line-height: 1.5; margin: 0; }
 `;
 
 // Types
@@ -309,7 +315,7 @@ function ResponseDisplay({ response, loading }: { response: RulesResponse | null
       </div>
       <div className="response-footer">
         <span className="response-time">Response time: {response.response_time}s</span>
-        <button className="ask-again-button" onClick={() => window.location.reload()}>
+        <button className="ask-again-button" onClick={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); window.location.reload(); }}>
           Ask another question
         </button>
       </div>
@@ -324,6 +330,14 @@ export default function ColumbiaApp() {
   const { isListening, transcript, isSupported, error: voiceError, startListening, stopListening } = useVoiceRecognition();
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [showIntro, setShowIntro] = useState(() => {
+    return !localStorage.getItem('rex_introduced');
+  });
+
+  const dismissIntro = () => {
+    localStorage.setItem('rex_introduced', 'true');
+    setShowIntro(false);
+  };
 
   useEffect(() => {
     const style = document.createElement('style');
@@ -373,6 +387,19 @@ export default function ColumbiaApp() {
       </div>
 
       <div className="app-main">
+	{showIntro && (
+  	  <div className="rex-intro fade-in">
+    	    <div className="rex-intro-header">
+      	      <div className="rex-badge">REX</div>
+      	      <button className="rex-intro-dismiss" onClick={dismissIntro}>✕</button>
+    	    </div>
+    	    <p className="rex-intro-title">Meet Rex — your Rules Expert</p>
+    	    <p className="rex-intro-text">
+      	      Ask me any golf rules question, including Columbia CC local rules. 
+     	      Type below or tap the mic to speak.
+    	    </p>
+  	  </div>
+	)}
         <div className="input-container">
           <input
             ref={inputRef}
