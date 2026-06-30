@@ -164,7 +164,13 @@ function useVoiceRecognition() {
 }
 
 // ─── API Hook ────────────────────────────────────────────────────
-function useColumbiaRulesAPI() {
+function useColumbiaRulesAPI(): {
+  loading: boolean;
+  response: RulesResponse | null;
+  error: string | null;
+  askQuestion: (question: string, fastMode?: boolean) => Promise<void>;
+  resetResponse: () => void;
+} {
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<RulesResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
