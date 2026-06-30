@@ -199,7 +199,7 @@ const MicIcon = () => (
 );
 
 // ─── Quick Question Icons ────────────────────────────────────────
-const quickQuestionIcons: Record<string, { bg: string; icon: JSX.Element }> = {
+const quickQuestionIcons: Record<string, { bg: string; icon: React.ReactElement }> = {
   train: {
     bg: '#f3e8ff',
     icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="14" rx="3" stroke="#7c3aed" strokeWidth="2"/><path d="M4 13h16" stroke="#7c3aed" strokeWidth="2"/><circle cx="8" cy="20" r="1.5" fill="#7c3aed"/><circle cx="16" cy="20" r="1.5" fill="#7c3aed"/><path d="M9 17l-3 6M15 17l3 6" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round"/><rect x="8" y="6" width="3" height="4" rx="0.5" stroke="#7c3aed" strokeWidth="1.5"/><rect x="13" y="6" width="3" height="4" rx="0.5" stroke="#7c3aed" strokeWidth="1.5"/></svg>,
