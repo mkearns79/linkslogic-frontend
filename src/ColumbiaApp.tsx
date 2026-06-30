@@ -1,58 +1,95 @@
 // src/components/ColumbiaApp.tsx
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import cccLogo from './CCC logo.png';
+import linksLogicLogo from './LL logo.png';
 
-// Columbia-specific styling
-const columbiaStyles = `
-  .columbia-container {
-    background: linear-gradient(to bottom, #eff6ff, #dbeafe) !important;
-    min-height: 100vh !important;
-  }
-
-  .columbia-container main {
-    padding-left: 1.5rem !important;
-    padding-right: 1.5rem !important;
-  }
-  
-  .columbia-container header > div,
-  .columbia-container footer > div {
-    padding-left: 1.5rem !important;
-    padding-right: 1.5rem !important;
-  }
-
-   /* Override global body background for Columbia */
-  body {
-    background: linear-gradient(to bottom, #eff6ff, #dbeafe) !important;
-  }
-  
-  .columbia-container .tab-selector {
-    background: white !important;
-  }
-  
-  .columbia-container .tab-button.active {
-    background: #2563eb !important;
-    color: white !important;
-  }
-  
-  .columbia-container .submit-button {
-    background: #2563eb !important;
-  }
-  
-  .columbia-container .submit-button:hover:not(:disabled) {
-    background: #1d4ed8 !important;
-  }
-  
-  .columbia-container .mic-button.ready {
-    background: #2563eb !important;
-  }
-  
-  .columbia-container .mic-button.ready:hover {
-    background: #1d4ed8 !important;
-  }
-`;
-
-// Configuration for Columbia CC
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://linkslogic-backend-576708582341.us-central1.run.app';
+// Configuration
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://192.168.1.158:5001';
 const CLUB_ID = 'columbia_cc';
+
+// Color palette derived from LinksLogic + CCC logos
+const colors = {
+  darkGreen: '#1a3c34',
+  accentGreen: '#2d6a4f',
+  gold: '#b8860b',
+  navy: '#1a2744',
+  white: '#ffffff',
+  bgLight: '#f5f5f7',
+  bgCard: '#fafafa',
+  borderLight: '#f0f0f0',
+  borderMedium: '#e0e0e0',
+  textPrimary: '#333333',
+  textSecondary: '#888888',
+  textTertiary: '#bbbbbb',
+};
+
+// Styles
+const appStyles = `
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+  * { box-sizing: border-box; }
+  body { background: ${colors.white} !important; margin: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; }
+  .columbia-app { min-height: 100vh; min-height: 100dvh; background: ${colors.white}; display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; }
+  .app-header { padding: 16px 20px; border-bottom: 0.5px solid ${colors.borderLight}; background: ${colors.white}; position: sticky; top: 0; z-index: 10; }
+  .header-inner { display: flex; align-items: center; gap: 14px; }
+  .header-logo { width: 48px; height: 48px; object-fit: contain; flex-shrink: 0; }
+  .header-divider { width: 1px; height: 36px; background: ${colors.borderMedium}; flex-shrink: 0; }
+  .header-text h1 { font-size: 15px; font-weight: 600; color: ${colors.navy}; margin: 0; line-height: 1.3; }
+  .header-text p { font-size: 12px; color: ${colors.textSecondary}; margin: 2px 0 0 0; }
+  .app-main { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+  .input-container { position: relative; }
+  .text-input { width: 100%; background: ${colors.bgLight}; border-radius: 14px; padding: 14px 52px 14px 16px; font-size: 15px; color: ${colors.textPrimary}; border: 1px solid transparent; outline: none; font-family: inherit; line-height: 1.4; transition: border-color 0.2s; }
+  .text-input::placeholder { color: #999; }
+  .text-input:focus { border-color: ${colors.accentGreen}; }
+  .mic-button { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; border-radius: 50%; background: ${colors.darkGreen}; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; padding: 0; }
+  .mic-button:hover { background: ${colors.accentGreen}; }
+  .mic-button.listening { background: #c0392b; animation: pulse-ring 1.5s ease infinite; }
+  .mic-button:disabled { background: #ccc; cursor: not-allowed; }
+  .mic-button svg { width: 16px; height: 16px; }
+  @keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgba(192, 57, 43, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(192, 57, 43, 0); } 100% { box-shadow: 0 0 0 0 rgba(192, 57, 43, 0); } }
+  .listening-indicator { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: #fef3e2; border-radius: 10px; font-size: 13px; color: ${colors.gold}; }
+  .listening-dots { display: flex; gap: 3px; }
+  .listening-dots span { width: 4px; height: 4px; background: ${colors.gold}; border-radius: 50%; animation: bounce-dot 1.2s ease infinite; }
+  .listening-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .listening-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce-dot { 0%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-6px); } }
+  .section-label { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+  .section-label span { font-size: 11px; font-weight: 500; color: #aaa; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+  .section-label-line { flex: 1; height: 0.5px; background: #eaeaea; }
+  .quick-questions { display: flex; flex-direction: column; gap: 8px; }
+  .quick-card { background: ${colors.bgCard}; border: 0.5px solid ${colors.borderLight}; border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: background 0.15s; text-align: left; width: 100%; font-family: inherit; }
+  .quick-card:hover { background: #f0f0f2; }
+  .quick-card:disabled { opacity: 0.5; cursor: not-allowed; }
+  .quick-card-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .quick-card-text { font-size: 14px; color: ${colors.textPrimary}; line-height: 1.4; }
+  .response-container { background: ${colors.white}; border-radius: 14px; border: 0.5px solid ${colors.borderLight}; overflow: hidden; }
+  .response-header { display: flex; align-items: center; gap: 10px; padding: 16px 16px 12px; border-bottom: 0.5px solid ${colors.borderLight}; }
+  .rex-badge { width: 36px; height: 36px; border-radius: 50%; background: ${colors.bgLight}; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: ${colors.darkGreen}; flex-shrink: 0; }
+  .response-meta { flex: 1; }
+  .response-meta-name { font-size: 14px; font-weight: 600; color: ${colors.textPrimary}; margin: 0; }
+  .response-badges { display: flex; align-items: center; gap: 6px; margin-top: 3px; flex-wrap: wrap; }
+  .rule-badge { font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 10px; color: ${colors.white}; }
+  .rule-badge.local { background: ${colors.navy}; }
+  .rule-badge.official { background: ${colors.accentGreen}; }
+  .rule-badge.hybrid { background: ${colors.gold}; }
+  .rule-numbers { font-size: 11px; color: ${colors.textSecondary}; }
+  .response-body { padding: 16px; }
+  .response-body p { font-size: 14px; line-height: 1.7; color: ${colors.textPrimary}; margin: 0; white-space: pre-wrap; }
+  .response-footer { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-top: 0.5px solid ${colors.borderLight}; }
+  .response-time { font-size: 11px; color: ${colors.textTertiary}; }
+  .ask-again-button { font-size: 13px; color: ${colors.accentGreen}; background: none; border: none; cursor: pointer; font-family: inherit; font-weight: 500; padding: 4px 0; }
+  .ask-again-button:hover { color: ${colors.darkGreen}; }
+  .loading-container { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 24px; background: ${colors.bgCard}; border-radius: 14px; border: 0.5px solid ${colors.borderLight}; }
+  .loading-spinner { width: 20px; height: 20px; border: 2px solid ${colors.borderMedium}; border-top-color: ${colors.accentGreen}; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-size: 14px; color: ${colors.textSecondary}; }
+  .error-display { padding: 12px 16px; background: #fef2f2; border: 0.5px solid #fecaca; border-radius: 10px; font-size: 13px; color: #991b1b; }
+  .app-footer { padding: 12px 20px 24px; display: flex; flex-direction: column; align-items: center; }
+  .powered-by { font-size: 10px; color: ${colors.textTertiary}; margin: 0 0 6px 0; letter-spacing: 0.5px; text-transform: uppercase; }
+  .footer-logo { width: 140px; height: auto; object-fit: contain; opacity: 0.8; }
+  .slogan { font-size: 10px; color: ${colors.textTertiary}; margin: 4px 0 0 0; }
+  .fade-in { animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+`;
 
 // Types
 interface RulesResponse {
@@ -67,439 +104,295 @@ interface RulesResponse {
   error?: string;
 }
 
-interface QuickQuestion {
-  id: string;
-  text: string;
-  category: string;
-  icon: string;
-}
-
-// Voice Recognition Hook
+// ─── Voice Recognition Hook ──────────────────────────────────────
 function useVoiceRecognition() {
   const [isListening, setIsListening] = useState(false);
-  const [isTranscribing, setIsTranscribing] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [isSupported, setIsSupported] = useState(false);
-  const [voiceError, setVoiceError] = useState<string | null>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const chunksRef = useRef<Blob[]>([]);
-  const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
-    setIsSupported(!!navigator.mediaDevices?.getUserMedia);
-  }, []);
-
-  const startListening = useCallback(async () => {
-    try {
-      setTranscript('');
-      setVoiceError(null);
-      setIsTranscribing(false);
-      chunksRef.current = [];
-
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
-      mediaRecorderRef.current = mediaRecorder;
-
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          chunksRef.current.push(event.data);
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    setIsSupported(!!SpeechRecognition);
+    if (SpeechRecognition) {
+      recognitionRef.current = new SpeechRecognition();
+      const recognition = recognitionRef.current;
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+      recognition.maxAlternatives = 1;
+      let submitTimeout: NodeJS.Timeout | null = null;
+      let accumulatedTranscript = '';
+      recognition.onstart = () => { setIsListening(true); setError(null); accumulatedTranscript = ''; };
+      recognition.onresult = (event: any) => {
+        let finalTranscript = '';
+        let interimTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const t = event.results[i][0].transcript;
+          if (event.results[i].isFinal) finalTranscript += t;
+          else interimTranscript += t;
+        }
+        if (finalTranscript) accumulatedTranscript += finalTranscript + ' ';
+        const currentTranscript = accumulatedTranscript + interimTranscript;
+        if (currentTranscript.trim()) {
+          setTranscript(currentTranscript.trim());
+          if (submitTimeout) clearTimeout(submitTimeout);
+          submitTimeout = setTimeout(() => { accumulatedTranscript = ''; recognition.stop(); }, 5000);
         }
       };
-
-      mediaRecorder.onstop = async () => {
-        stream.getTracks().forEach(track => track.stop());
-        setIsListening(false);
-        setIsTranscribing(true);
-
-        const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' });
-
-        const formData = new FormData();
-        formData.append('audio', audioBlob, 'recording.webm');
-
-        try {
-          const response = await fetch(`${API_BASE_URL}/api/transcribe`, {
-            method: 'POST',
-            body: formData,
-          });
-          const data = await response.json();
-
-          if (data.success && data.transcript) {
-            setTranscript(data.transcript);
-          } else {
-            setVoiceError(data.error || 'Transcription failed');
-          }
-        } catch (err) {
-          setVoiceError('Failed to transcribe audio');
-        }
-
-        setIsTranscribing(false);
-      };
-
-      mediaRecorder.start(1000);
-      setIsListening(true);
-
-      // Auto-stop after 30 seconds
-      silenceTimerRef.current = setTimeout(() => {
-        if (mediaRecorderRef.current?.state === 'recording') {
-          mediaRecorderRef.current.stop();
-        }
-      }, 30000);
-
-    } catch (err) {
-      setVoiceError('Microphone access denied');
-      setIsListening(false);
+      recognition.onend = () => setIsListening(false);
+      recognition.onerror = (event: any) => { setError(`Voice recognition error: ${event.error}`); setIsListening(false); };
     }
   }, []);
 
-  const stopListening = useCallback(() => {
-    if (silenceTimerRef.current) {
-      clearTimeout(silenceTimerRef.current);
+  const startListening = () => {
+    if (recognitionRef.current && !isListening) {
+      setTranscript(''); setError(null);
+      try { recognitionRef.current.start(); } catch { setError('Failed to start voice recognition'); }
     }
-    if (mediaRecorderRef.current?.state === 'recording') {
-      mediaRecorderRef.current.stop();
-    }
-  }, []);
-
-  return {
-    isListening,
-    isTranscribing,
-    transcript,
-    isSupported,
-    error: voiceError,
-    startListening,
-    stopListening,
   };
+  const stopListening = () => { if (recognitionRef.current && isListening) recognitionRef.current.stop(); };
+
+  return { isListening, transcript, isSupported, error, startListening, stopListening };
 }
 
-// API Hook
+// ─── API Hook ────────────────────────────────────────────────────
 function useColumbiaRulesAPI() {
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<RulesResponse | null>(null);
-  const [apiError, setApiError] = useState<string | null>(null);
-  const [quickQuestions, setQuickQuestions] = useState<QuickQuestion[]>([]);
-  
-  useEffect(() => {
-    fetch(`${API_BASE_URL}/api/quick-questions`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          setQuickQuestions(data.questions);
-        }
-      })
-      .catch(err => console.error('Failed to load quick questions:', err));
-  }, []);
-  
-  const askQuestion = async (question: string, fastMode: boolean = true) => {
-    setLoading(true);
-    setApiError(null);
-    setResponse(null);
-    
+  const [error, setError] = useState<string | null>(null);
+  const [requestInProgress, setRequestInProgress] = useState(false);
+
+  const askQuestion = useCallback(async (question: string, fastMode: boolean = true) => {
+    if (requestInProgress || loading) return;
+    setRequestInProgress(true); setLoading(true); setError(null);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/ask`, {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      const res = await fetch(`${API_BASE_URL}/api/ask`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          question,
-          club_id: CLUB_ID,
-          fast_mode: fastMode
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question, club_id: CLUB_ID, fast_mode: fastMode }),
+        signal: controller.signal
       });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        setResponse(data);
-      } else {
-        setApiError(data.error || 'Failed to get rules information');
-      }
-    } catch (err) {
-      setApiError('Network error - please check your connection');
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  return {
-    loading,
-    response,
-    error: apiError,
-    quickQuestions,
-    askQuestion
-  };
+      clearTimeout(timeoutId);
+      const data = await res.json();
+      if (data.success) { setResponse(data); setError(null); }
+      else setError(data.error || 'Failed to get response');
+    } catch (err: any) {
+      setError(err.name === 'AbortError' ? 'Request timed out' : 'Network error. Please check your connection.');
+    } finally { setLoading(false); setRequestInProgress(false); }
+  }, [requestInProgress, loading]);
+
+  return { loading, response, error, askQuestion };
 }
 
-// Response Display Component
-function ColumbiaRulesResponse({ response, loading }: { response: RulesResponse | null; loading: boolean }) {
+// ─── Mic Icon ────────────────────────────────────────────────────
+const MicIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+    <line x1="12" y1="19" x2="12" y2="23"/>
+    <line x1="8" y1="23" x2="16" y2="23"/>
+  </svg>
+);
+
+// ─── Quick Question Icons ────────────────────────────────────────
+const quickQuestionIcons: Record<string, { bg: string; icon: JSX.Element }> = {
+  train: {
+    bg: '#f3e8ff',
+    icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="14" rx="3" stroke="#7c3aed" strokeWidth="2"/><path d="M4 13h16" stroke="#7c3aed" strokeWidth="2"/><circle cx="8" cy="20" r="1.5" fill="#7c3aed"/><circle cx="16" cy="20" r="1.5" fill="#7c3aed"/><path d="M9 17l-3 6M15 17l3 6" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round"/><rect x="8" y="6" width="3" height="4" rx="0.5" stroke="#7c3aed" strokeWidth="1.5"/><rect x="13" y="6" width="3" height="4" rx="0.5" stroke="#7c3aed" strokeWidth="1.5"/></svg>,
+  },
+  water: {
+    bg: '#e6f1fb',
+    icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" stroke="#378add" strokeWidth="2.5" strokeLinecap="round"/></svg>,
+  },
+  maintenance: {
+    bg: '#fef3e2',
+    icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 21V9l9-6 9 6v12" stroke="#ba7517" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M9 21V14h6v7" stroke="#ba7517" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M1 21h22" stroke="#ba7517" strokeWidth="2" strokeLinecap="round"/><path d="M10 10h4" stroke="#ba7517" strokeWidth="2" strokeLinecap="round"/></svg>,
+  },
+  cart: {
+    bg: '#e8f5ec',
+    icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="7" cy="19" r="2" stroke="#1d9e75" strokeWidth="2"/><circle cx="18" cy="19" r="2" stroke="#1d9e75" strokeWidth="2"/><path d="M5 19h-1a1 1 0 0 1-1-1v-4l3-8h8l2 5h4a1 1 0 0 1 1 1v6" stroke="#1d9e75" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M9 19h7" stroke="#1d9e75" strokeWidth="2"/><path d="M14 7v5" stroke="#1d9e75" strokeWidth="1.5" strokeLinecap="round"/></svg>,
+  },
+};
+
+// ─── Quick Questions Data ────────────────────────────────────────
+const quickQuestions = [
+  { id: 'purple', text: 'What is the Purple Line boundary rule?', iconType: 'train' },
+  { id: 'water17', text: 'Options for ball in the water on #17?', iconType: 'water' },
+  { id: 'maintenance', text: 'Ball went into the maintenance area on #10', iconType: 'maintenance' },
+  { id: 'cartpath', text: 'Do I get relief from cart path behind #14 and #17?', iconType: 'cart' },
+];
+
+// ─── Response Component ──────────────────────────────────────────
+function ResponseDisplay({ response, loading }: { response: RulesResponse | null; loading: boolean }) {
   if (loading) {
     return (
-      <div className="bg-white rounded-lg p-6 shadow-lg fade-in">
-        <div className="flex items-center justify-center space-x-3">
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-          <span className="text-gray-600">Rex is verifying the rules...</span>
-        </div>
+      <div className="loading-container fade-in">
+        <div className="loading-spinner" />
+        <span className="loading-text">Rex is checking the rules...</span>
       </div>
     );
   }
-  
   if (!response) return null;
-  
-  return (
-    <div className="bg-white rounded-lg p-6 shadow-lg fade-in">
-      {/* Answer */}
-      <div className="prose prose-sm max-w-none mb-4">
-        <div 
-          className="text-gray-800 leading-relaxed"
-          dangerouslySetInnerHTML={{
-            __html: response.answer
-              .split('\n')
-              .map(line => {
-                const trimmed = line.trim();
-                if (trimmed.startsWith('\u2022 ') || trimmed.startsWith('• ')) {
-                  const text = trimmed.replace(/^[•\u2022]\s*/, '');
-                  return `<div style="display: flex; margin-bottom: 2px; padding-left: 16px;"><span style="margin-right: 8px;">•</span><span>${text}</span></div>`;
-                } else if (trimmed.startsWith('- ')) {
-                  const text = trimmed.replace(/^-\s*/, '');
-                  return `<div style="display: flex; margin-bottom: 2px; padding-left: 40px;"><span style="margin-right: 8px;">-</span><span>${text}</span></div>`;
-                } else {
-                  return line;
-                }
-              })
-              .join('<br>')
-              .replace(/<\/div><br><div style="display: flex/g, '</div><div style="display: flex')
-          }}
-        />
-      </div>
-      
-      {/* Spacer */}
-      <div style={{height: '24px'}}></div>
 
-      {/* Footer */}
-      <div className="flex items-center justify-between pt-6 border-t border-gray-100">
-        <span className="text-xs text-gray-500">
-          Response time: {response.response_time}s
-        </span>
-        <button 
-          onClick={() => window.location.reload()}
-          className="text-blue-600 text-sm hover:text-blue-800"
-        >
-          🔄 Ask Another Question
+  const ruleLabels: Record<string, { label: string; className: string }> = {
+    local: { label: 'Columbia CC Local Rule', className: 'local' },
+    official: { label: 'Official Rules of Golf', className: 'official' },
+    hybrid: { label: 'Combined Rules', className: 'hybrid' },
+  };
+  const rule = ruleLabels[response.rule_type] || ruleLabels.official;
+
+  return (
+    <div className="response-container fade-in">
+      <div className="response-header">
+        <div className="rex-badge">REX</div>
+        <div className="response-meta">
+          <p className="response-meta-name">Rex says:</p>
+          <div className="response-badges">
+            <span className={`rule-badge ${rule.className}`}>{rule.label}</span>
+            {response.rule_numbers?.length > 0 && (
+              <span className="rule-numbers">Rules: {response.rule_numbers.join(', ')}</span>
+            )}
+          </div>
+        </div>
+      </div>
+      <div className="response-body">
+        <p>{response.answer}</p>
+      </div>
+      <div className="response-footer">
+        <span className="response-time">Response time: {response.response_time}s</span>
+        <button className="ask-again-button" onClick={() => window.location.reload()}>
+          Ask another question
         </button>
       </div>
     </div>
   );
 }
 
-// Quick Questions Component
-function ColumbiaQuickQuestions({ questions, onQuestionSelect, disabled }: {
-  questions: QuickQuestion[];
-  onQuestionSelect: (question: string) => void;
-  disabled: boolean;
-}) {
-  if (questions.length === 0) return null;
-  
-  return (
-    <div className="bg-white rounded-lg p-4 shadow-sm">
-      <p className="text-gray-600 text-sm mb-3 font-medium">Common Columbia Rules Questions:</p>
-      <div className="grid gap-2">
-        {questions.map((q) => (
-          <button
-            key={q.id}
-            onClick={() => onQuestionSelect(q.text)}
-            disabled={disabled}
-            className="flex items-center p-3 bg-gray-50 rounded-lg text-sm hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-left transition-colors"
-            style={{ padding: '20px', fontSize: '16px', minHeight: '60px' }}
-          >
-            <span className="text-lg mr-3">{q.icon}</span>
-            <span className="text-gray-700">{q.text}</span>
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// Main Columbia App Component
+// ─── Main Component ──────────────────────────────────────────────
 export default function ColumbiaApp() {
-  const [activeTab, setActiveTab] = useState<'voice' | 'text'>('voice');
   const [textInput, setTextInput] = useState('');
-  
-  // Voice recognition hook
-  const { isListening, isTranscribing, transcript, isSupported, error: voiceError, startListening, stopListening } = useVoiceRecognition();
+  const { loading, response, error, askQuestion } = useColumbiaRulesAPI();
+  const { isListening, transcript, isSupported, error: voiceError, startListening, stopListening } = useVoiceRecognition();
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  
-  // API hook
-  const { loading, response, error: apiError, quickQuestions, askQuestion } = useColumbiaRulesAPI();
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // Inject Columbia-specific styles
   useEffect(() => {
-    const styleElement = document.createElement('style');
-    styleElement.textContent = columbiaStyles;
-    document.head.appendChild(styleElement);
-    return () => {
-      document.head.removeChild(styleElement);
-    };
+    const style = document.createElement('style');
+    style.textContent = appStyles;
+    document.head.appendChild(style);
+    return () => { if (document.head.contains(style)) document.head.removeChild(style); };
   }, []);
 
-  // Handle voice transcript submission
   useEffect(() => {
-    if (transcript && !isListening && !isTranscribing && !hasSubmitted) {
-      console.log('🎤 Whisper transcript:', transcript);
+    if (transcript && !isListening && !hasSubmitted) {
       setHasSubmitted(true);
-      handleQuestion(transcript);
+      setTextInput(transcript);
+      askQuestion(transcript, true);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [transcript, isListening, isTranscribing, hasSubmitted]);
+  }, [transcript, isListening, hasSubmitted, askQuestion]);
 
-  const handleStartListening = () => {
-    console.log('🎤 Starting fresh voice session');
-    setHasSubmitted(false);
-    setActiveTab('voice');
-    startListening();
+  const handleSubmit = () => {
+    if (textInput.trim() && !loading) { setHasSubmitted(true); askQuestion(textInput.trim(), true); }
   };
-  
-  const handleQuestion = (question: string) => {
-    askQuestion(question, true);
-    setTextInput('');
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') { e.preventDefault(); handleSubmit(); }
   };
-  
-  const handleTextSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (textInput.trim()) {
-      handleQuestion(textInput.trim());
-    }
+
+  const handleQuickQuestion = (text: string) => {
+    setTextInput(text); setHasSubmitted(true); askQuestion(text, true);
   };
-  
+
+  const handleMicClick = () => {
+    if (isListening) { stopListening(); }
+    else { setHasSubmitted(false); setTextInput(''); startListening(); }
+  };
+
+  const showQuickQuestions = !loading && !response;
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-blue-100 columbia-container">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-md mx-auto px-4 py-4">
-          <div className="text-center">
-            <h1 className="text-xl font-bold text-gray-800">Columbia Country Club</h1>
-            <p className="text-sm text-gray-600">Golf Rules Assistant</p>
+    <div className="columbia-app">
+      <div className="app-header">
+        <div className="header-inner">
+          <img src={cccLogo} alt="Columbia Country Club" className="header-logo" />
+          <div className="header-divider" />
+          <div className="header-text">
+            <h1>Golf Rules Assistant</h1>
+            <p>Columbia Country Club</p>
           </div>
         </div>
-      </header>
-      
-      {/* Main Content */}
-      <main className="max-w-md mx-auto px-4 py-6 space-y-6">
-        {/* Tab Selector */}
-        <div className="bg-white rounded-lg p-1 shadow-sm">
-          <div className="grid grid-cols-2 gap-1">
+      </div>
+
+      <div className="app-main">
+        <div className="input-container">
+          <input
+            ref={inputRef}
+            type="text"
+            className="text-input"
+            placeholder={isListening ? 'Listening...' : 'Ask Rex a rules question...'}
+            value={isListening ? transcript : textInput}
+            onChange={(e) => { setTextInput(e.target.value); setHasSubmitted(false); }}
+            onKeyDown={handleKeyDown}
+            disabled={loading || isListening}
+          />
+          {isSupported && (
             <button
-              onClick={isListening ? stopListening : handleStartListening}
-              className={`py-2 px-4 rounded-md font-medium text-sm transition ${
-                isListening 
-                  ? 'bg-red-500 text-white' 
-                  : activeTab === 'voice'
-                    ? 'bg-blue-600 text-white hover:bg-blue-700'
-                    : 'bg-blue-600 text-white hover:bg-blue-700'
-              }`}
-              style={{ padding: '16px 32px', fontSize: '16px' }}
+              className={`mic-button ${isListening ? 'listening' : ''}`}
+              onClick={handleMicClick}
+              disabled={loading}
+              aria-label={isListening ? 'Stop listening' : 'Start voice input'}
             >
-              {isListening ? '🔴 Listening...' : isTranscribing ? '⏳ Transcribing...' : '🎤 Voice'}
+              {isListening ? (
+                <svg viewBox="0 0 24 24" fill="white" stroke="none"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+              ) : (
+                <MicIcon />
+              )}
             </button>
-            <button
-              onClick={() => setActiveTab('text')}
-              className={`py-2 px-4 rounded-md font-medium text-sm transition ${
-                activeTab === 'text' 
-                  ? 'bg-blue-600 text-white' 
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-              style={{ padding: '16px 32px', fontSize: '16px' }}
-            >
-              ⌨️ Type
-            </button>
-          </div>
-        </div>
-        
-        {/* Input Section */}
-        <div className="bg-white rounded-lg p-6 shadow-lg">
-          {activeTab === 'voice' ? (
-            <div className="text-center space-y-4">
-              <p className="text-sm text-gray-600">
-                {isListening 
-                  ? 'Listening... (hit record when finished)' 
-                  : hasSubmitted 
-                    ? 'Question submitted!'
-                    : 'Tap the Voice button above to speak your question'
-                }
-              </p>
-              
-              {voiceError && (
-                <p className="text-xs text-red-500 mt-1">{voiceError}</p>
-              )}
-              
-              {transcript && (
-                <div className="p-3 bg-blue-50 rounded-lg border border-blue-200 text-left">
-                  <p className="text-blue-800 font-medium text-sm">You said:</p>
-                  <p className="text-blue-600 mt-1">"{transcript}"</p>
-                  {hasSubmitted && (
-                    <p className="text-green-600 text-sm mt-1">✅ Sent to Rex</p>
-                  )}
-                </div>
-              )}
-              
-              {!isSupported && (
-                <div className="text-center p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                  <p className="text-yellow-800 font-medium">Voice recognition not available</p>
-                  <p className="text-sm text-yellow-600 mt-1">
-                    Try using Chrome, Edge, or Safari for voice features
-                  </p>
-                </div>
-              )}
-            </div>
-          ) : (
-            <form onSubmit={handleTextSubmit} className="space-y-3">
-              <textarea
-                value={textInput}
-                onChange={(e) => setTextInput(e.target.value)}
-                placeholder="Type your golf rules question..."
-                className="w-full p-4 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                rows={3}
-                disabled={loading}
-              />
-              <button
-                type="submit"
-                disabled={loading || !textInput.trim()}
-                className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-                style={{ padding: '20px', fontSize: '18px' }}
-              >
-                {loading ? 'Rex is thinking...' : 'Ask Rex'}
-              </button>
-            </form>
           )}
         </div>
-        
-        {/* Error Display */}
-        {apiError && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 fade-in">
-            <p className="text-red-800">{apiError}</p>
+
+        {isListening && (
+          <div className="listening-indicator fade-in">
+            <div className="listening-dots"><span/><span/><span/></div>
+            Listening — Rex will submit after 5 seconds of silence
           </div>
         )}
-        
-        {/* Response Display */}
-        <ColumbiaRulesResponse response={response} loading={loading} />
-	{response && <div className="mb-4"></div>}
-        
-        {/* Quick Questions */}
-        {!loading && !response && (
-          <ColumbiaQuickQuestions 
-            questions={quickQuestions}
-            onQuestionSelect={handleQuestion}
-            disabled={loading}
-          />
+
+        {voiceError && <div className="error-display">{voiceError}</div>}
+        {error && <div className="error-display">{error}</div>}
+
+        <ResponseDisplay response={response} loading={loading} />
+
+        {showQuickQuestions && (
+          <>
+            <div className="section-label">
+              <span>Common questions</span>
+              <div className="section-label-line" />
+            </div>
+            <div className="quick-questions">
+              {quickQuestions.map((q) => {
+                const iconConfig = quickQuestionIcons[q.iconType];
+                return (
+                  <button key={q.id} className="quick-card" onClick={() => handleQuickQuestion(q.text)} disabled={loading}>
+                    <div className="quick-card-icon" style={{ background: iconConfig.bg }}>{iconConfig.icon}</div>
+                    <span className="quick-card-text">{q.text}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </>
         )}
-      </main>
-      
-      {/* Footer */}
-      <footer className="max-w-md mx-auto px-6 pb-6">
-        <div className="text-center text-blue-600 text-xs">
-          <p>Powered by LinksLogic AI • Columbia Golf Rules Expert</p>
-        </div>
-      </footer>
+      </div>
+
+      <div className="app-footer">
+        <p className="powered-by">Powered by</p>
+        <img src={linksLogicLogo} alt="LinksLogic" className="footer-logo" />
+        <p className="slogan">Your Course. Your Rules. Instantly.</p>
+      </div>
     </div>
   );
 }
