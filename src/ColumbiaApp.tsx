@@ -227,6 +227,51 @@ const quickQuestions = [
 ];
 
 // ─── Response Component ──────────────────────────────────────────
+function formatResponse(text: string) {
+  const lines = text.split('\n');
+  const elements: React.ReactElement[] = [];
+  let currentList: string[] = [];
+
+  const flushList = () => {
+    if (currentList.length > 0) {
+      elements.push(
+        <ul key={`ul-${elements.length}`} style={{
+          margin: '8px 0', paddingLeft: '20px', listStyleType: 'disc'
+        }}>
+          {currentList.map((item, i) => (
+            <li key={i} style={{
+              fontSize: '14px', lineHeight: '1.7', color: '#333',
+              paddingLeft: '4px', marginBottom: '4px'
+            }}>{item}</li>
+          ))}
+        </ul>
+      );
+      currentList = [];
+    }
+  };
+
+  lines.forEach((line, i) => {
+    const trimmed = line.trim();
+    const bulletMatch = trimmed.match(/^[•\-–—]\s*(.+)/);
+    if (bulletMatch) {
+      currentList.push(bulletMatch[1]);
+    } else {
+      flushList();
+      if (trimmed) {
+        elements.push(
+          <p key={`p-${i}`} style={{
+            fontSize: '14px', lineHeight: '1.7', color: '#333',
+            margin: '0 0 8px 0'
+          }}>{trimmed}</p>
+        );
+      }
+    }
+  });
+
+  flushList();
+  return elements;
+}
+
 function ResponseDisplay({ response, loading }: { response: RulesResponse | null; loading: boolean }) {
   if (loading) {
     return (
@@ -260,7 +305,7 @@ function ResponseDisplay({ response, loading }: { response: RulesResponse | null
         </div>
       </div>
       <div className="response-body">
-        <p>{response.answer}</p>
+        {formatResponse(response.answer)}
       </div>
       <div className="response-footer">
         <span className="response-time">Response time: {response.response_time}s</span>
