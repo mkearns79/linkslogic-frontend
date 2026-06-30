@@ -169,6 +169,7 @@ function useColumbiaRulesAPI() {
   const [response, setResponse] = useState<RulesResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [requestInProgress, setRequestInProgress] = useState(false);
+  const resetResponse = () => { setResponse(null); setError(null); };
 
   const askQuestion = useCallback(async (question: string, fastMode: boolean = true) => {
     if (requestInProgress || loading) return;
@@ -191,7 +192,7 @@ function useColumbiaRulesAPI() {
     } finally { setLoading(false); setRequestInProgress(false); }
   }, [requestInProgress, loading]);
 
-  return { loading, response, error, askQuestion };
+  return { loading, response, error, askQuestion, resetResponse } = useColumbiaRulesAPI();
 }
 
 // ─── Mic Icon ────────────────────────────────────────────────────
@@ -315,7 +316,7 @@ function ResponseDisplay({ response, loading }: { response: RulesResponse | null
       </div>
       <div className="response-footer">
         <span className="response-time">Response time: {response.response_time}s</span>
-        <button className="ask-again-button" onClick={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); window.location.reload(); }}>
+        <button className="ask-again-button" onClick={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); resetResponse(); setTextInput(''); setHasSubmitted(false); }}>
           Ask another question
         </button>
       </div>
