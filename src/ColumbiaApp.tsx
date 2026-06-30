@@ -198,7 +198,7 @@ function useColumbiaRulesAPI(): {
     } finally { setLoading(false); setRequestInProgress(false); }
   }, [requestInProgress, loading]);
 
-  return { loading, response, error, askQuestion, resetResponse } = useColumbiaRulesAPI();
+  return { loading, response, error, askQuestion, resetResponse };
 }
 
 // ─── Mic Icon ────────────────────────────────────────────────────
@@ -333,7 +333,7 @@ function ResponseDisplay({ response, loading }: { response: RulesResponse | null
 // ─── Main Component ──────────────────────────────────────────────
 export default function ColumbiaApp() {
   const [textInput, setTextInput] = useState('');
-  const { loading, response, error, askQuestion } = useColumbiaRulesAPI();
+  const { loading, response, error, askQuestion, resetResponse } = useColumbiaRulesAPI();
   const { isListening, transcript, isSupported, error: voiceError, startListening, stopListening } = useVoiceRecognition();
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
