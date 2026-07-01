@@ -86,7 +86,7 @@ const appStyles = `
   .error-display { padding: 12px 16px; background: #fef2f2; border: 0.5px solid #fecaca; border-radius: 10px; font-size: 13px; color: #991b1b; }
   .app-footer { padding: 12px 20px 24px; display: flex; flex-direction: column; align-items: center; }
   .powered-by { font-size: 10px; color: ${colors.textTertiary}; margin: 0 0 6px 0; letter-spacing: 0.5px; text-transform: uppercase; }
-  .footer-logo { width: 140px; height: auto; object-fit: contain; opacity: 0.8; }
+  .footer-logo { width: 160px; height: auto; object-fit: contain; opacity: 0.8; }
   .slogan { font-size: 10px; color: ${colors.textTertiary}; margin: 4px 0 0 0; }
   .fade-in { animation: fadeIn 0.3s ease; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
