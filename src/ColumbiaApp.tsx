@@ -96,6 +96,8 @@ const appStyles = `
   .rex-intro-dismiss:hover { color: #666; }
   .rex-intro-title { font-size: 15px; font-weight: 600; color: #1a3c34; margin: 0 0 6px 0; }
   .rex-intro-text { font-size: 13px; color: #555; line-height: 1.5; margin: 0; }
+  .you-asked { background: #e8f5ec; border-radius: 12px; padding: 12px 16px; font-size: 14px; color: ${colors.textPrimary}; line-height: 1.5; }
+  .you-asked strong { font-weight: 600; }
 `;
 
 // Types
@@ -307,29 +309,34 @@ function ResponseDisplay({ response, loading, onReset }: { response: RulesRespon
   const rule = ruleLabels[response.rule_type] || ruleLabels.official;
 
   return (
-    <div className="response-container fade-in">
-      <div className="response-header">
-        <div className="rex-badge">REX</div>
-        <div className="response-meta">
-          <p className="response-meta-name">Rex says:</p>
-          <div className="response-badges">
-            <span className={`rule-badge ${rule.className}`}>{rule.label}</span>
-            {response.rule_numbers?.length > 0 && (
-              <span className="rule-numbers">Rules: {response.rule_numbers.join(', ')}</span>
-            )}
+    <>
+      <div className="you-asked fade-in">
+        <strong>You asked:</strong> {response.question}
+      </div>
+      <div className="response-container fade-in">
+        <div className="response-header">
+          <div className="rex-badge">REX</div>
+          <div className="response-meta">
+            <p className="response-meta-name">Rex says:</p>
+            <div className="response-badges">
+              <span className={`rule-badge ${rule.className}`}>{rule.label}</span>
+              {response.rule_numbers?.length > 0 && (
+                <span className="rule-numbers">Rules: {response.rule_numbers.join(', ')}</span>
+              )}
+            </div>
           </div>
         </div>
+        <div className="response-body">
+          {formatResponse(response.answer)}
+        </div>
+        <div className="response-footer">
+          <span className="response-time">Response time: {response.response_time}s</span>
+          <button className="ask-again-button" onClick={onReset}>
+            Ask another question
+          </button>
+        </div>
       </div>
-      <div className="response-body">
-        {formatResponse(response.answer)}
-      </div>
-      <div className="response-footer">
-        <span className="response-time">Response time: {response.response_time}s</span>
-        <button className="ask-again-button" onClick={onReset}>
-          Ask another question
-        </button>
-      </div>
-    </div>
+    </>
   );
 }
 
