@@ -159,8 +159,9 @@ function useVoiceRecognition() {
     }
   };
   const stopListening = () => { if (recognitionRef.current && isListening) recognitionRef.current.stop(); };
+  const resetTranscript = () => { setTranscript(''); };
 
-  return { isListening, transcript, isSupported, error, startListening, stopListening };
+  return { isListening, transcript, isSupported, error, startListening, stopListening, resetTranscript };
 }
 
 // ─── API Hook ────────────────────────────────────────────────────
@@ -335,7 +336,7 @@ function ResponseDisplay({ response, loading, onReset }: { response: RulesRespon
 export default function ColumbiaApp() {
   const [textInput, setTextInput] = useState('');
   const { loading, response, error, askQuestion, resetResponse } = useColumbiaRulesAPI();
-  const { isListening, transcript, isSupported, error: voiceError, startListening, stopListening } = useVoiceRecognition();
+  const { isListening, transcript, isSupported, error: voiceError, startListening, stopListening, resetTranscript } = useVoiceRecognition();
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [shouldScrollTop, setShouldScrollTop] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -387,6 +388,7 @@ export default function ColumbiaApp() {
 
   const handleReset = () => {
     resetResponse();
+    resetTranscript();
     setTextInput('');
     setHasSubmitted(false);
     setShouldScrollTop(true);
