@@ -375,7 +375,7 @@ export default function ColumbiaApp() {
       document.body.scrollTop = 0;
       window.scrollTo(0, 0);
       inputRef.current?.focus();
-    }, 150);
+    }, 200);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
