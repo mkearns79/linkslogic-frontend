@@ -366,6 +366,13 @@ export default function ColumbiaApp() {
     if (textInput.trim() && !loading) { setHasSubmitted(true); askQuestion(textInput.trim(), true); }
   };
 
+  const handleReset = () => {
+    resetResponse();
+    setTextInput('');
+    setHasSubmitted(false);
+    setTimeout(() => { topRef.current?.scrollIntoView({ behavior: 'smooth' }); }, 50);
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') { e.preventDefault(); handleSubmit(); }
   };
@@ -446,12 +453,7 @@ export default function ColumbiaApp() {
         {voiceError && <div className="error-display">{voiceError}</div>}
         {error && <div className="error-display">{error}</div>}
 
-        <ResponseDisplay response={response} loading={loading} onReset={() => {
-          resetResponse();
-   	  setTextInput('');
-  	  setHasSubmitted(false);
-  	  setTimeout(() => { topRef.current?.scrollIntoView({ behavior: 'smooth' }); }, 50);
-	}} />
+        <ResponseDisplay response={response} loading={loading} onReset={handleReset} />
 
         {showQuickQuestions && (
           <>
