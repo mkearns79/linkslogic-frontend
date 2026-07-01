@@ -362,6 +362,12 @@ export default function ColumbiaApp() {
     }
   }, [transcript, isListening, hasSubmitted, askQuestion]);
 
+  useEffect(() => {
+    if (!response && !loading) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [response, loading]);
+
   const handleSubmit = () => {
     if (textInput.trim() && !loading) { setHasSubmitted(true); askQuestion(textInput.trim(), true); }
   };
@@ -370,7 +376,6 @@ export default function ColumbiaApp() {
     resetResponse();
     setTextInput('');
     setHasSubmitted(false);
-    setTimeout(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, 50);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
