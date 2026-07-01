@@ -236,7 +236,7 @@ const quickQuestions = [
   { id: 'purple', text: 'What is the Purple Line boundary rule?', iconType: 'train' },
   { id: 'water17', text: 'Options for ball in the water on #17?', iconType: 'water' },
   { id: 'maintenance', text: 'Ball went into the maintenance area on #10', iconType: 'maintenance' },
-  { id: 'cartpath', text: 'Do I get relief from cart path behind #14 and #17?', iconType: 'cart' },
+  { id: 'cartpath', text: 'Do I get relief from cart path behind #14 and #17 greens?', iconType: 'cart' },
 ];
 
 // ─── Response Component ──────────────────────────────────────────
@@ -370,7 +370,7 @@ export default function ColumbiaApp() {
     resetResponse();
     setTextInput('');
     setHasSubmitted(false);
-    setTimeout(() => { topRef.current?.scrollIntoView({ behavior: 'smooth' }); }, 50);
+    setTimeout(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, 50);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
