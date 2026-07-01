@@ -337,6 +337,7 @@ export default function ColumbiaApp() {
   const { isListening, transcript, isSupported, error: voiceError, startListening, stopListening } = useVoiceRecognition();
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const topRef = useRef<HTMLDivElement>(null);
   const [showIntro, setShowIntro] = useState(() => {
     return !localStorage.getItem('rex_introduced');
   });
@@ -389,6 +390,7 @@ export default function ColumbiaApp() {
           <div className="header-text">
             <h1>Golf Rules Assistant</h1>
             <p>Columbia Country Club</p>
+	  <div className="app-header" ref={topRef}>
           </div>
         </div>
       </div>
@@ -445,10 +447,10 @@ export default function ColumbiaApp() {
         {error && <div className="error-display">{error}</div>}
 
         <ResponseDisplay response={response} loading={loading} onReset={() => {
-  	  window.scrollTo({ top: 0, behavior: 'smooth' });
-  	  resetResponse();
-  	  setTextInput('');
+          resetResponse();
+   	  setTextInput('');
   	  setHasSubmitted(false);
+  	  setTimeout(() => { topRef.current?.scrollIntoView({ behavior: 'smooth' }); }, 50);
 	}} />
 
         {showQuickQuestions && (
