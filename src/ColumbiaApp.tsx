@@ -27,7 +27,8 @@ const colors = {
 const appStyles = `
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
   * { box-sizing: border-box; }
-  body { background: ${colors.white} !important; margin: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; }
+  html { overflow-x: hidden; }
+  body { background: #ffffff !important; margin: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; }
   .columbia-app { min-height: 100vh; min-height: 100dvh; background: #ffffff; display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; }
   .app-header { padding: 16px 20px; border-bottom: 0.5px solid #f0f0f0; background: #ffffff; flex-shrink: 0; position: sticky; top: 0; z-index: 10; }
   .header-inner { display: flex; align-items: center; gap: 14px; }
