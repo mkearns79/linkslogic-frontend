@@ -395,7 +395,7 @@ export default function ColumbiaApp() {
 
   return (
     <div className="columbia-app">
-      <div className="app-header" ref={topRef}>
+      <div className="app-header">
         <div className="header-inner">
           <img src={cccLogo} alt="Columbia Country Club" className="header-logo" />
           <div className="header-divider" />
