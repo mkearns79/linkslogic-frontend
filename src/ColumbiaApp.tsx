@@ -239,7 +239,7 @@ const quickQuestions = [
   { id: 'cartpath', text: 'Do I get relief from cart path behind #14 and #17 greens?', iconType: 'cart' },
 ];
 
-// ─── Response Component ──────────────────────────────────────────
+// ─── Response Formatter ──────────────────────────────────────────
 function formatResponse(text: string) {
   const lines = text.split('\n');
   const elements: React.ReactElement[] = [];
@@ -285,6 +285,7 @@ function formatResponse(text: string) {
   return elements;
 }
 
+// ─── Response Component ──────────────────────────────────────────
 function ResponseDisplay({ response, loading, onReset }: { response: RulesResponse | null; loading: boolean; onReset: () => void }) {
   if (loading) {
     return (
@@ -323,8 +324,8 @@ function ResponseDisplay({ response, loading, onReset }: { response: RulesRespon
       <div className="response-footer">
         <span className="response-time">Response time: {response.response_time}s</span>
         <button className="ask-again-button" onClick={onReset}>
-  	  Ask another question
-	</button>
+          Ask another question
+        </button>
       </div>
     </div>
   );
@@ -336,8 +337,8 @@ export default function ColumbiaApp() {
   const { loading, response, error, askQuestion, resetResponse } = useColumbiaRulesAPI();
   const { isListening, transcript, isSupported, error: voiceError, startListening, stopListening } = useVoiceRecognition();
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [shouldScrollTop, setShouldScrollTop] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const mainRef = useRef<HTMLDivElement>(null);
   const [showIntro, setShowIntro] = useState(() => {
     return !localStorage.getItem('rex_introduced');
   });
@@ -347,6 +348,7 @@ export default function ColumbiaApp() {
     setShowIntro(false);
   };
 
+  // Inject styles
   useEffect(() => {
     const style = document.createElement('style');
     style.textContent = appStyles;
@@ -354,6 +356,7 @@ export default function ColumbiaApp() {
     return () => { if (document.head.contains(style)) document.head.removeChild(style); };
   }, []);
 
+  // Auto-submit voice transcript
   useEffect(() => {
     if (transcript && !isListening && !hasSubmitted) {
       setHasSubmitted(true);
@@ -362,12 +365,21 @@ export default function ColumbiaApp() {
     }
   }, [transcript, isListening, hasSubmitted, askQuestion]);
 
+  // Brute-force scroll to top after reset
   useEffect(() => {
-    if (!response && !loading) {
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
+    if (shouldScrollTop && !response && !loading) {
+      const id = setInterval(() => {
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+        window.scrollTo(0, 0);
+      }, 50);
+      setTimeout(() => {
+        clearInterval(id);
+        setShouldScrollTop(false);
+        inputRef.current?.focus();
+      }, 300);
     }
-  }, [response, loading]);
+  }, [shouldScrollTop, response, loading]);
 
   const handleSubmit = () => {
     if (textInput.trim() && !loading) { setHasSubmitted(true); askQuestion(textInput.trim(), true); }
@@ -377,6 +389,7 @@ export default function ColumbiaApp() {
     resetResponse();
     setTextInput('');
     setHasSubmitted(false);
+    setShouldScrollTop(true);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -406,20 +419,22 @@ export default function ColumbiaApp() {
           </div>
         </div>
       </div>
-      <div className="app-main" ref={mainRef}>
-	{showIntro && (
-  	  <div className="rex-intro fade-in">
-    	    <div className="rex-intro-header">
-      	      <div className="rex-badge">REX</div>
-      	      <button className="rex-intro-dismiss" onClick={dismissIntro}>✕</button>
-    	    </div>
-    	    <p className="rex-intro-title">Meet Rex — your Rules Expert</p>
-    	    <p className="rex-intro-text">
-      	      Ask me any golf rules question, including Columbia CC local rules. 
-     	      Type below or tap the mic to speak.
-    	    </p>
-	  </div>
-	)}
+
+      <div className="app-main">
+        {showIntro && (
+          <div className="rex-intro fade-in">
+            <div className="rex-intro-header">
+              <div className="rex-badge">REX</div>
+              <button className="rex-intro-dismiss" onClick={dismissIntro}>&#10005;</button>
+            </div>
+            <p className="rex-intro-title">Meet Rex &#8212; your Rules Expert</p>
+            <p className="rex-intro-text">
+              Ask me any golf rules question, including Columbia CC local rules.
+              Type below or tap the mic to speak.
+            </p>
+          </div>
+        )}
+
         <div className="input-container">
           <input
             ref={inputRef}
@@ -450,7 +465,7 @@ export default function ColumbiaApp() {
         {isListening && (
           <div className="listening-indicator fade-in">
             <div className="listening-dots"><span/><span/><span/></div>
-            Listening — Rex will submit after 5 seconds of silence
+            Listening &#8212; Rex will submit after 5 seconds of silence
           </div>
         )}
 
