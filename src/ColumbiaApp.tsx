@@ -362,17 +362,6 @@ export default function ColumbiaApp() {
     }
   }, [transcript, isListening, hasSubmitted, askQuestion]);
 
-  useEffect(() => {
-    if (!response && !loading) {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
-          inputRef.current?.focus();
-        });
-      });
-    }
-  }, [response, loading]);
-
   const handleSubmit = () => {
     if (textInput.trim() && !loading) { setHasSubmitted(true); askQuestion(textInput.trim(), true); }
   };
@@ -381,6 +370,12 @@ export default function ColumbiaApp() {
     resetResponse();
     setTextInput('');
     setHasSubmitted(false);
+    setTimeout(() => {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      window.scrollTo(0, 0);
+      inputRef.current?.focus();
+    }, 100);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
