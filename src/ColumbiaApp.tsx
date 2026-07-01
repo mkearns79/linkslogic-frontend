@@ -364,7 +364,12 @@ export default function ColumbiaApp() {
 
   useEffect(() => {
     if (!response && !loading) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+          inputRef.current?.focus();
+        });
+      });
     }
   }, [response, loading]);
 
