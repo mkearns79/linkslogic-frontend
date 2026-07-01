@@ -405,8 +405,7 @@ export default function ColumbiaApp() {
           </div>
         </div>
       </div>
-
-      <div className="app-main">
+      <div className="app-main" ref={mainRef}>
 	{showIntro && (
   	  <div className="rex-intro fade-in">
     	    <div className="rex-intro-header">
@@ -418,7 +417,6 @@ export default function ColumbiaApp() {
       	      Ask me any golf rules question, including Columbia CC local rules. 
      	      Type below or tap the mic to speak.
     	    </p>
-  	  <div className="app-main" ref={mainRef}>
 	  </div>
 	)}
         <div className="input-container">
