@@ -29,7 +29,7 @@ const appStyles = `
   * { box-sizing: border-box; }
   body { background: ${colors.white} !important; margin: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; }
   .columbia-app { min-height: 100vh; min-height: 100dvh; background: #ffffff; display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; }
-  .app-header { padding: 16px 20px; border-bottom: 0.5px solid #f0f0f0; background: #ffffff; flex-shrink: 0; }
+  .app-header { padding: 16px 20px; border-bottom: 0.5px solid #f0f0f0; background: #ffffff; flex-shrink: 0; position: sticky; top: 0; z-index: 10; }
   .header-inner { display: flex; align-items: center; gap: 14px; }
   .header-logo { width: 48px; height: 48px; object-fit: contain; flex-shrink: 0; }
   .header-divider { width: 1px; height: 36px; background: ${colors.borderMedium}; flex-shrink: 0; }
