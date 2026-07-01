@@ -366,32 +366,20 @@ export default function ColumbiaApp() {
     }
   }, [transcript, isListening, hasSubmitted, askQuestion]);
 
-  // Brute-force scroll to top after reset
+  // Prevent browser from restoring scroll position on reload
   useEffect(() => {
-    if (shouldScrollTop && !response && !loading) {
-      const id = setInterval(() => {
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
-        window.scrollTo(0, 0);
-      }, 50);
-      setTimeout(() => {
-        clearInterval(id);
-        setShouldScrollTop(false);
-        inputRef.current?.focus();
-      }, 300);
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
     }
-  }, [shouldScrollTop, response, loading]);
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleSubmit = () => {
     if (textInput.trim() && !loading) { setHasSubmitted(true); askQuestion(textInput.trim(), true); }
   };
 
   const handleReset = () => {
-    resetResponse();
-    resetTranscript();
-    setTextInput('');
-    setHasSubmitted(false);
-    setShouldScrollTop(true);
+    window.location.reload();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
