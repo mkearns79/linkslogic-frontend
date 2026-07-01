@@ -28,14 +28,14 @@ const appStyles = `
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
   * { box-sizing: border-box; }
   body { background: ${colors.white} !important; margin: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; }
-  .columbia-app { min-height: 100vh; min-height: 100dvh; background: ${colors.white}; display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; }
-  .app-header { padding: 16px 20px; border-bottom: 0.5px solid ${colors.borderLight}; background: ${colors.white}; position: sticky; top: 0; z-index: 10; }
+  .columbia-app { height: 100vh; height: 100dvh; background: #ffffff; display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; overflow: hidden; }
+  .app-header { padding: 16px 20px; border-bottom: 0.5px solid #f0f0f0; background: #ffffff; flex-shrink: 0; }
   .header-inner { display: flex; align-items: center; gap: 14px; }
   .header-logo { width: 48px; height: 48px; object-fit: contain; flex-shrink: 0; }
   .header-divider { width: 1px; height: 36px; background: ${colors.borderMedium}; flex-shrink: 0; }
   .header-text h1 { font-size: 15px; font-weight: 600; color: ${colors.navy}; margin: 0; line-height: 1.3; }
   .header-text p { font-size: 12px; color: ${colors.textSecondary}; margin: 2px 0 0 0; }
-  .app-main { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+  .app-main { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .input-container { position: relative; }
   .text-input { width: 100%; background: ${colors.bgLight}; border-radius: 14px; padding: 14px 52px 14px 16px; font-size: 15px; color: ${colors.textPrimary}; border: 1px solid transparent; outline: none; font-family: inherit; line-height: 1.4; transition: border-color 0.2s; }
   .text-input::placeholder { color: #999; }
@@ -337,7 +337,7 @@ export default function ColumbiaApp() {
   const { isListening, transcript, isSupported, error: voiceError, startListening, stopListening } = useVoiceRecognition();
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const topRef = useRef<HTMLDivElement>(null);
+  const mainRef = useRef<HTMLDivElement>(null);
   const [showIntro, setShowIntro] = useState(() => {
     return !localStorage.getItem('rex_introduced');
   });
@@ -362,6 +362,12 @@ export default function ColumbiaApp() {
     }
   }, [transcript, isListening, hasSubmitted, askQuestion]);
 
+  useEffect(() => {
+    if (!response && !loading && mainRef.current) {
+      mainRef.current.scrollTop = 0;
+    }
+  }, [response, loading]);
+
   const handleSubmit = () => {
     if (textInput.trim() && !loading) { setHasSubmitted(true); askQuestion(textInput.trim(), true); }
   };
@@ -370,12 +376,6 @@ export default function ColumbiaApp() {
     resetResponse();
     setTextInput('');
     setHasSubmitted(false);
-    setTimeout(() => {
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-      window.scrollTo(0, 0);
-      inputRef.current?.focus();
-    }, 200);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -418,7 +418,8 @@ export default function ColumbiaApp() {
       	      Ask me any golf rules question, including Columbia CC local rules. 
      	      Type below or tap the mic to speak.
     	    </p>
-  	  </div>
+  	  <div className="app-main" ref={mainRef}>
+	  </div>
 	)}
         <div className="input-container">
           <input
