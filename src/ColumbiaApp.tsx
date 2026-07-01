@@ -335,8 +335,8 @@ function ResponseDisplay({ response, loading, onReset }: { response: RulesRespon
 // ─── Main Component ──────────────────────────────────────────────
 export default function ColumbiaApp() {
   const [textInput, setTextInput] = useState('');
-  const { loading, response, error, askQuestion, resetResponse } = useColumbiaRulesAPI();
-  const { isListening, transcript, isSupported, error: voiceError, startListening, stopListening, resetTranscript } = useVoiceRecognition();
+  const { loading, response, error, askQuestion } = useColumbiaRulesAPI();
+  const { isListening, transcript, isSupported, error: voiceError, startListening, stopListening } = useVoiceRecognition();
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [showIntro, setShowIntro] = useState(() => {
