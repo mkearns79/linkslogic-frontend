@@ -338,7 +338,6 @@ export default function ColumbiaApp() {
   const { loading, response, error, askQuestion, resetResponse } = useColumbiaRulesAPI();
   const { isListening, transcript, isSupported, error: voiceError, startListening, stopListening, resetTranscript } = useVoiceRecognition();
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [shouldScrollTop, setShouldScrollTop] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [showIntro, setShowIntro] = useState(() => {
     return !localStorage.getItem('rex_introduced');
